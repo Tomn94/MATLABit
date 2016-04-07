@@ -1,0 +1,527 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6433EC351CB69D7B00784EE5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC341CB69D7B00784EE5 /* main.m */; };
+		6433EC381CB69D7B00784EE5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC371CB69D7B00784EE5 /* AppDelegate.m */; };
+		6433EC3B1CB69D7B00784EE5 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC3A1CB69D7B00784EE5 /* FirstViewController.m */; };
+		6433EC3E1CB69D7B00784EE5 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC3D1CB69D7B00784EE5 /* SecondViewController.m */; };
+		6433EC411CB69D7B00784EE5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC3F1CB69D7B00784EE5 /* Main.storyboard */; };
+		6433EC431CB69D7B00784EE5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC421CB69D7B00784EE5 /* Assets.xcassets */; };
+		6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */; };
+		6433EC511CB69D7B00784EE5 /* MATLABitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC501CB69D7B00784EE5 /* MATLABitTests.m */; };
+		6433EC5C1CB69D7B00784EE5 /* MATLABitUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6433EC4D1CB69D7B00784EE5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6433EC281CB69D7A00784EE5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6433EC2F1CB69D7A00784EE5;
+			remoteInfo = MATLABit;
+		};
+		6433EC581CB69D7B00784EE5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6433EC281CB69D7A00784EE5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6433EC2F1CB69D7A00784EE5;
+			remoteInfo = MATLABit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		6433EC301CB69D7B00784EE5 /* MATLABit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MATLABit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6433EC341CB69D7B00784EE5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		6433EC361CB69D7B00784EE5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		6433EC371CB69D7B00784EE5 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		6433EC391CB69D7B00784EE5 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
+		6433EC3A1CB69D7B00784EE5 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		6433EC3C1CB69D7B00784EE5 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		6433EC3D1CB69D7B00784EE5 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		6433EC401CB69D7B00784EE5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		6433EC421CB69D7B00784EE5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6433EC451CB69D7B00784EE5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		6433EC471CB69D7B00784EE5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6433EC4C1CB69D7B00784EE5 /* MATLABitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MATLABitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6433EC501CB69D7B00784EE5 /* MATLABitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MATLABitTests.m; sourceTree = "<group>"; };
+		6433EC521CB69D7B00784EE5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6433EC571CB69D7B00784EE5 /* MATLABitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MATLABitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MATLABitUITests.m; sourceTree = "<group>"; };
+		6433EC5D1CB69D7B00784EE5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6433EC2D1CB69D7A00784EE5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6433EC491CB69D7B00784EE5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6433EC541CB69D7B00784EE5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6433EC271CB69D7A00784EE5 = {
+			isa = PBXGroup;
+			children = (
+				6433EC321CB69D7B00784EE5 /* MATLABit */,
+				6433EC4F1CB69D7B00784EE5 /* MATLABitTests */,
+				6433EC5A1CB69D7B00784EE5 /* MATLABitUITests */,
+				6433EC311CB69D7B00784EE5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6433EC311CB69D7B00784EE5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6433EC301CB69D7B00784EE5 /* MATLABit.app */,
+				6433EC4C1CB69D7B00784EE5 /* MATLABitTests.xctest */,
+				6433EC571CB69D7B00784EE5 /* MATLABitUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6433EC321CB69D7B00784EE5 /* MATLABit */ = {
+			isa = PBXGroup;
+			children = (
+				6433EC361CB69D7B00784EE5 /* AppDelegate.h */,
+				6433EC371CB69D7B00784EE5 /* AppDelegate.m */,
+				6433EC391CB69D7B00784EE5 /* FirstViewController.h */,
+				6433EC3A1CB69D7B00784EE5 /* FirstViewController.m */,
+				6433EC3C1CB69D7B00784EE5 /* SecondViewController.h */,
+				6433EC3D1CB69D7B00784EE5 /* SecondViewController.m */,
+				6433EC3F1CB69D7B00784EE5 /* Main.storyboard */,
+				6433EC421CB69D7B00784EE5 /* Assets.xcassets */,
+				6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */,
+				6433EC471CB69D7B00784EE5 /* Info.plist */,
+				6433EC331CB69D7B00784EE5 /* Supporting Files */,
+			);
+			path = MATLABit;
+			sourceTree = "<group>";
+		};
+		6433EC331CB69D7B00784EE5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6433EC341CB69D7B00784EE5 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6433EC4F1CB69D7B00784EE5 /* MATLABitTests */ = {
+			isa = PBXGroup;
+			children = (
+				6433EC501CB69D7B00784EE5 /* MATLABitTests.m */,
+				6433EC521CB69D7B00784EE5 /* Info.plist */,
+			);
+			path = MATLABitTests;
+			sourceTree = "<group>";
+		};
+		6433EC5A1CB69D7B00784EE5 /* MATLABitUITests */ = {
+			isa = PBXGroup;
+			children = (
+				6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */,
+				6433EC5D1CB69D7B00784EE5 /* Info.plist */,
+			);
+			path = MATLABitUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6433EC2F1CB69D7A00784EE5 /* MATLABit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6433EC601CB69D7B00784EE5 /* Build configuration list for PBXNativeTarget "MATLABit" */;
+			buildPhases = (
+				6433EC2C1CB69D7A00784EE5 /* Sources */,
+				6433EC2D1CB69D7A00784EE5 /* Frameworks */,
+				6433EC2E1CB69D7A00784EE5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MATLABit;
+			productName = MATLABit;
+			productReference = 6433EC301CB69D7B00784EE5 /* MATLABit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6433EC4B1CB69D7B00784EE5 /* MATLABitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6433EC631CB69D7B00784EE5 /* Build configuration list for PBXNativeTarget "MATLABitTests" */;
+			buildPhases = (
+				6433EC481CB69D7B00784EE5 /* Sources */,
+				6433EC491CB69D7B00784EE5 /* Frameworks */,
+				6433EC4A1CB69D7B00784EE5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6433EC4E1CB69D7B00784EE5 /* PBXTargetDependency */,
+			);
+			name = MATLABitTests;
+			productName = MATLABitTests;
+			productReference = 6433EC4C1CB69D7B00784EE5 /* MATLABitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6433EC561CB69D7B00784EE5 /* MATLABitUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6433EC661CB69D7B00784EE5 /* Build configuration list for PBXNativeTarget "MATLABitUITests" */;
+			buildPhases = (
+				6433EC531CB69D7B00784EE5 /* Sources */,
+				6433EC541CB69D7B00784EE5 /* Frameworks */,
+				6433EC551CB69D7B00784EE5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6433EC591CB69D7B00784EE5 /* PBXTargetDependency */,
+			);
+			name = MATLABitUITests;
+			productName = MATLABitUITests;
+			productReference = 6433EC571CB69D7B00784EE5 /* MATLABitUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6433EC281CB69D7A00784EE5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = Tomn;
+				TargetAttributes = {
+					6433EC2F1CB69D7A00784EE5 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+					6433EC4B1CB69D7B00784EE5 = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = 6433EC2F1CB69D7A00784EE5;
+					};
+					6433EC561CB69D7B00784EE5 = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = 6433EC2F1CB69D7A00784EE5;
+					};
+				};
+			};
+			buildConfigurationList = 6433EC2B1CB69D7A00784EE5 /* Build configuration list for PBXProject "MATLABit" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6433EC271CB69D7A00784EE5;
+			productRefGroup = 6433EC311CB69D7B00784EE5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6433EC2F1CB69D7A00784EE5 /* MATLABit */,
+				6433EC4B1CB69D7B00784EE5 /* MATLABitTests */,
+				6433EC561CB69D7B00784EE5 /* MATLABitUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6433EC2E1CB69D7A00784EE5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */,
+				6433EC431CB69D7B00784EE5 /* Assets.xcassets in Resources */,
+				6433EC411CB69D7B00784EE5 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6433EC4A1CB69D7B00784EE5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6433EC551CB69D7B00784EE5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6433EC2C1CB69D7A00784EE5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6433EC3E1CB69D7B00784EE5 /* SecondViewController.m in Sources */,
+				6433EC381CB69D7B00784EE5 /* AppDelegate.m in Sources */,
+				6433EC3B1CB69D7B00784EE5 /* FirstViewController.m in Sources */,
+				6433EC351CB69D7B00784EE5 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6433EC481CB69D7B00784EE5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6433EC511CB69D7B00784EE5 /* MATLABitTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6433EC531CB69D7B00784EE5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6433EC5C1CB69D7B00784EE5 /* MATLABitUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6433EC4E1CB69D7B00784EE5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6433EC2F1CB69D7A00784EE5 /* MATLABit */;
+			targetProxy = 6433EC4D1CB69D7B00784EE5 /* PBXContainerItemProxy */;
+		};
+		6433EC591CB69D7B00784EE5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6433EC2F1CB69D7A00784EE5 /* MATLABit */;
+			targetProxy = 6433EC581CB69D7B00784EE5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		6433EC3F1CB69D7B00784EE5 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6433EC401CB69D7B00784EE5 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6433EC451CB69D7B00784EE5 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6433EC5E1CB69D7B00784EE5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6433EC5F1CB69D7B00784EE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6433EC611CB69D7B00784EE5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = MATLABit/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		6433EC621CB69D7B00784EE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = MATLABit/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		6433EC641CB69D7B00784EE5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = MATLABitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MATLABit.app/MATLABit";
+			};
+			name = Debug;
+		};
+		6433EC651CB69D7B00784EE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = MATLABitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MATLABit.app/MATLABit";
+			};
+			name = Release;
+		};
+		6433EC671CB69D7B00784EE5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = MATLABitUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABitUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = MATLABit;
+			};
+			name = Debug;
+		};
+		6433EC681CB69D7B00784EE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = MATLABitUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABitUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = MATLABit;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6433EC2B1CB69D7A00784EE5 /* Build configuration list for PBXProject "MATLABit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6433EC5E1CB69D7B00784EE5 /* Debug */,
+				6433EC5F1CB69D7B00784EE5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6433EC601CB69D7B00784EE5 /* Build configuration list for PBXNativeTarget "MATLABit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6433EC611CB69D7B00784EE5 /* Debug */,
+				6433EC621CB69D7B00784EE5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		6433EC631CB69D7B00784EE5 /* Build configuration list for PBXNativeTarget "MATLABitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6433EC641CB69D7B00784EE5 /* Debug */,
+				6433EC651CB69D7B00784EE5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		6433EC661CB69D7B00784EE5 /* Build configuration list for PBXNativeTarget "MATLABitUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6433EC671CB69D7B00784EE5 /* Debug */,
+				6433EC681CB69D7B00784EE5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6433EC281CB69D7A00784EE5 /* Project object */;
+}
