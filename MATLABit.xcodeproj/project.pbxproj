@@ -16,6 +16,7 @@
 		6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */; };
 		6433EC511CB69D7B00784EE5 /* MATLABitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC501CB69D7B00784EE5 /* MATLABitTests.m */; };
 		6433EC5C1CB69D7B00784EE5 /* MATLABitUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */; };
+		6433EC6B1CB6A55C00784EE5 /* Crypt.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC6A1CB6A55C00784EE5 /* Crypt.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		6433EC571CB69D7B00784EE5 /* MATLABitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MATLABitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MATLABitUITests.m; sourceTree = "<group>"; };
 		6433EC5D1CB69D7B00784EE5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6433EC691CB6A55C00784EE5 /* Crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crypt.h; sourceTree = "<group>"; };
+		6433EC6A1CB6A55C00784EE5 /* Crypt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Crypt.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,11 +109,13 @@
 			children = (
 				6433EC361CB69D7B00784EE5 /* AppDelegate.h */,
 				6433EC371CB69D7B00784EE5 /* AppDelegate.m */,
+				6433EC3F1CB69D7B00784EE5 /* Main.storyboard */,
 				6433EC391CB69D7B00784EE5 /* FirstViewController.h */,
 				6433EC3A1CB69D7B00784EE5 /* FirstViewController.m */,
 				6433EC3C1CB69D7B00784EE5 /* SecondViewController.h */,
 				6433EC3D1CB69D7B00784EE5 /* SecondViewController.m */,
-				6433EC3F1CB69D7B00784EE5 /* Main.storyboard */,
+				6433EC691CB6A55C00784EE5 /* Crypt.h */,
+				6433EC6A1CB6A55C00784EE5 /* Crypt.m */,
 				6433EC421CB69D7B00784EE5 /* Assets.xcassets */,
 				6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */,
 				6433EC471CB69D7B00784EE5 /* Info.plist */,
@@ -277,6 +282,7 @@
 			files = (
 				6433EC3E1CB69D7B00784EE5 /* SecondViewController.m in Sources */,
 				6433EC381CB69D7B00784EE5 /* AppDelegate.m in Sources */,
+				6433EC6B1CB6A55C00784EE5 /* Crypt.m in Sources */,
 				6433EC3B1CB69D7B00784EE5 /* FirstViewController.m in Sources */,
 				6433EC351CB69D7B00784EE5 /* main.m in Sources */,
 			);

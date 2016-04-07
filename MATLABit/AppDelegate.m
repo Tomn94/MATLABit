@@ -8,15 +8,17 @@
 
 #import "AppDelegate.h"
 
-@interface AppDelegate ()
-
-@end
-
 @implementation AppDelegate
 
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+- (BOOL)          application:(UIApplication *)application
+didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:1.0 green:0.502 blue:0.0 alpha:1.0]];
+    [[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.9608 green:0.9205 blue:0.816 alpha:1.0]];
+    [[UINavigationBar appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName: [UIColor whiteColor] }];
+    [_window setTintColor:[UIColor colorWithRed:1.0 green:0.502 blue:0.0 alpha:1.0]];
+    
     return YES;
 }
 
