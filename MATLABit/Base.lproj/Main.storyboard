@@ -17,7 +17,31 @@
                     <view key="view" contentMode="scaleToFill" id="tsR-hK-woN">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rno-xH-mvc">
+                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <subviews>
+                                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="Kfr-Tu-9n8" customClass="Logo" customModule="MATLABit" customModuleProvider="target">
+                                        <rect key="frame" x="234" y="-80" width="133" height="160"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="160" id="Gv1-51-zo3"/>
+                                            <constraint firstAttribute="width" constant="133" id="Pbc-YE-MAt"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Kfr-Tu-9n8" firstAttribute="centerX" secondItem="rno-xH-mvc" secondAttribute="centerX" id="B9p-DN-KqV"/>
+                                    <constraint firstItem="Kfr-Tu-9n8" firstAttribute="top" secondItem="rno-xH-mvc" secondAttribute="top" constant="-80" id="OSO-Bm-SOa"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="rno-xH-mvc" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="6Hm-GY-ffU"/>
+                            <constraint firstItem="rno-xH-mvc" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leading" id="G8b-Qo-btd"/>
+                            <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="rno-xH-mvc" secondAttribute="bottom" id="lia-Tq-KsE"/>
+                            <constraint firstAttribute="trailing" secondItem="rno-xH-mvc" secondAttribute="trailing" id="oLj-oM-l9x"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="9YL-pw-L89">
                         <barButtonItem key="rightBarButtonItem" image="user" id="qtI-fu-8bp">
@@ -26,6 +50,10 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="content" destination="rno-xH-mvc" id="d84-nF-Lkj"/>
+                        <outlet property="logo" destination="Kfr-Tu-9n8" id="IEJ-Ua-Es3"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W5J-7L-Pyd" sceneMemberID="firstResponder"/>
             </objects>
@@ -525,6 +553,7 @@ C'est sécurisé (OK peut-être pas autant que le Portail ESEO…), on ne récup
         <image name="heartSel" width="24" height="24"/>
         <image name="lock" width="24" height="24"/>
         <image name="lockSel" width="24" height="24"/>
+        <image name="logo" width="289" height="346"/>
         <image name="user" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>

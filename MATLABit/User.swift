@@ -40,7 +40,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         super.viewWillAppear(animated)
         
         chargerUI()
-        configureBannerWithImage(UIImage(named: "logo"),
+        configureBannerWithImage(UIImage(named: "header"),
                                  blurRadius: 0, blurTintColor: UIColor.clearColor(), saturationFactor: 1, maxHeight: 157)
         reloadEmpty()
     }
