@@ -32,6 +32,8 @@ import SpriteKit
 
 class SWBlade: SKNode {
     
+     var emitter: SKEmitterNode!
+    
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
   }
@@ -43,11 +45,12 @@ class SWBlade: SKNode {
     self.position = position
         
     let tip:SKSpriteNode = SKSpriteNode(color: color, size: CGSizeMake(25, 25))
-    tip.zRotation = 0.785398163
+//    tip.zRotation = 0.785398163
     tip.zPosition = 10
+    tip.texture = SKTexture(imageNamed: "spark.png")
     self.addChild(tip)
         
-    let emitter:SKEmitterNode = emitterNodeWithColor(color)
+    emitter = emitterNodeWithColor(color)
     emitter.targetNode = target
     emitter.zPosition = 0
     tip.addChild(emitter)
@@ -64,7 +67,7 @@ class SWBlade: SKNode {
   }
     
   func emitterNodeWithColor(color:UIColor)->SKEmitterNode {
-    let emitterNode:SKEmitterNode = SKEmitterNode()
+    let emitterNode:SKEmitterNode = SKEmitterNode(fileNamed: "Blade.sks")!/*
     emitterNode.particleTexture = SKTexture(imageNamed: "spark.png")
     emitterNode.particleBirthRate = 3000
         
@@ -93,7 +96,7 @@ class SWBlade: SKNode {
     emitterNode.particleColorBlendFactorSpeed = 0
         
     emitterNode.particleColor = color
-    emitterNode.particleBlendMode = SKBlendMode.Add
+    emitterNode.particleBlendMode = SKBlendMode.Add*/
         
     return emitterNode
   }

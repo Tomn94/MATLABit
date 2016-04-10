@@ -79,6 +79,20 @@ extension String {
 }
 
 
+extension Array where Element: Equatable {
+    mutating func removeObject(element: Element) {
+        if let index = indexOf(element) {
+            removeAtIndex(index)
+        }
+    }
+    mutating func removeObjects(elements: [Element]) {
+        for element in elements {
+            removeObject(element)
+        }
+    }
+}
+
+
 extension Dictionary {
     func URLBodyString() -> NSData {
         var queryItems = Array<NSURLQueryItem>()

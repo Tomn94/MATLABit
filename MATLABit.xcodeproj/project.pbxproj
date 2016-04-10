@@ -30,6 +30,9 @@
 		6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */; };
 		6433EC511CB69D7B00784EE5 /* MATLABitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC501CB69D7B00784EE5 /* MATLABitTests.m */; };
 		6433EC5C1CB69D7B00784EE5 /* MATLABitUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */; };
+		64768DB61CB9D73400A15DFF /* go3v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64768DB51CB9D60600A15DFF /* go3v2.ttf */; };
+		6495E2401CB982B7008D7E58 /* ExplosionPart.sks in Resources */ = {isa = PBXBuildFile; fileRef = 6495E23E1CB982B7008D7E58 /* ExplosionPart.sks */; };
+		6495E2451CB98653008D7E58 /* Blade.sks in Resources */ = {isa = PBXBuildFile; fileRef = 6495E2441CB98653008D7E58 /* Blade.sks */; };
 		64ACE3C51CB883510048D89E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64ACE3C41CB883510048D89E /* GameScene.swift */; };
 		64ACE3C71CB886170048D89E /* SWBlade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64ACE3C61CB886170048D89E /* SWBlade.swift */; };
 /* End PBXBuildFile section */
@@ -86,6 +89,9 @@
 		6433EC571CB69D7B00784EE5 /* MATLABitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MATLABitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MATLABitUITests.m; sourceTree = "<group>"; };
 		6433EC5D1CB69D7B00784EE5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		64768DB51CB9D60600A15DFF /* go3v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = go3v2.ttf; sourceTree = "<group>"; };
+		6495E23E1CB982B7008D7E58 /* ExplosionPart.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ExplosionPart.sks; sourceTree = "<group>"; };
+		6495E2441CB98653008D7E58 /* Blade.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Blade.sks; sourceTree = "<group>"; };
 		64ACE3C41CB883510048D89E /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		64ACE3C61CB886170048D89E /* SWBlade.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SWBlade.swift; sourceTree = "<group>"; };
 		A19CBDAC76A2CCB186B13E4A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -217,13 +223,15 @@
 				6429B1B11CB7E8A100C00BCF /* Data.swift */,
 				6429B1C31CB85B3B00C00BCF /* Welcome.swift */,
 				64ACE3C41CB883510048D89E /* GameScene.swift */,
+				6495E23E1CB982B7008D7E58 /* ExplosionPart.sks */,
 				6429B1171CB70C3800C00BCF /* Tinder.swift */,
 				6429B1351CB71F6D00C00BCF /* Crypter.swift */,
 				6429B1AF1CB7E63700C00BCF /* User.swift */,
 				6433EC421CB69D7B00784EE5 /* Assets.xcassets */,
+				64768DB51CB9D60600A15DFF /* go3v2.ttf */,
 				6433EC471CB69D7B00784EE5 /* Info.plist */,
 				6429B1B61CB802D900C00BCF /* MATLABit-Bridging-Header.h */,
-				64ACE3C61CB886170048D89E /* SWBlade.swift */,
+				64ACE3C81CB951010048D89E /* SWBlade */,
 				6429B1C51CB85B7A00C00BCF /* DZNEmptyDataSet */,
 				6429B1C21CB84D4B00C00BCF /* JAQBlurryTableViewController */,
 				6429B1C61CB85B9A00C00BCF /* Keychain */,
@@ -248,6 +256,15 @@
 				6433EC5D1CB69D7B00784EE5 /* Info.plist */,
 			);
 			path = MATLABitUITests;
+			sourceTree = "<group>";
+		};
+		64ACE3C81CB951010048D89E /* SWBlade */ = {
+			isa = PBXGroup;
+			children = (
+				64ACE3C61CB886170048D89E /* SWBlade.swift */,
+				6495E2441CB98653008D7E58 /* Blade.sks */,
+			);
+			name = SWBlade;
 			sourceTree = "<group>";
 		};
 		92B24A31072616147A7C58B8 /* Frameworks */ = {
@@ -364,6 +381,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64768DB61CB9D73400A15DFF /* go3v2.ttf in Resources */,
+				6495E2451CB98653008D7E58 /* Blade.sks in Resources */,
+				6495E2401CB982B7008D7E58 /* ExplosionPart.sks in Resources */,
 				6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */,
 				6433EC431CB69D7B00784EE5 /* Assets.xcassets in Resources */,
 				6433EC411CB69D7B00784EE5 /* Main.storyboard in Resources */,

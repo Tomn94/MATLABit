@@ -27,15 +27,9 @@ class Welcome: UIViewController {
         
         let vc = GameVC()
         let gameView = SKView()
-        gameView.showsFPS = true;
-        gameView.showsNodeCount = true
         gameView.ignoresSiblingOrder = true
         vc.view = gameView
         presentViewController(vc, animated: true, completion: nil)
-        
-        let scene = GameScene(size: UIScreen.mainScreen().bounds.size)
-        scene.scaleMode = .AspectFill
-        gameView.presentScene(scene)
 	}
     
     override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
