@@ -14,6 +14,15 @@ class Data {
     
     var connectionsTooMany: NSTimeInterval?
     var connectionsAttempts = 0
+    
+    var logo = UIImage(named: "ESEOasis")!
+    var fbURL = NSURL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    var harder = 1.0
+    var bestScore = 0
+    var phpURLs = [String: String]()
+    
+    var scores = Array<(String, Int)>()
+    
     private var pendingConnections = 0
     
     private init() { }
@@ -31,18 +40,25 @@ class Data {
         return KeychainSwift().get("login") != nil
     }
     
-    class func connect(login: String?, pass: String?, username: String?) {
+    class func hasProfilePic() -> Bool {
+        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
+        return NSData(contentsOfFile: filePath) != nil
+    }
+    
+    class func connect(login: String, pass: String, username: String) {
         let keychain = KeychainSwift()
-        keychain.set(login!, forKey: "login")
-        keychain.set(pass!, forKey: "passw")
-        keychain.set(username!, forKey: "uname")
+        keychain.set(login, forKey: "login")
+        keychain.set(pass, forKey: "passw")
+        keychain.set(username, forKey: "uname")
     }
     
     class func deconnect()  {
         KeychainSwift().clear()
     }
     
-    class func JSONRequest(url: String, post: [String: String]?, response: (JSON: AnyObject) -> Void) {
+    class func JSONRequest(url: String, on: UIViewController? = nil, post: [String: String]? = nil,
+                           response: (JSON: AnyObject?) -> Void = { _ in }) {
         let request = NSMutableURLRequest(URL: NSURL(string: url)!)
         if let postData = post {
             request.HTTPMethod = "POST"
@@ -53,13 +69,27 @@ class Data {
         let dataTast = defaultSession.dataTaskWithRequest(request) { (data, resp, error) in
             Data.sharedData.needsLoadingSpin(false)
             do {
-                let JSON = try NSJSONSerialization.JSONObjectWithData(data!, options: [])
-                response(JSON: JSON)
+                if let d = data {
+                    let JSON = try NSJSONSerialization.JSONObjectWithData(d, options: [])
+                    print(JSON)
+                    response(JSON: JSON)
+                } else {
+                    response(JSON: nil)
+                    if let vc = on {
+                        let alert = UIAlertController(title: "Erreur",
+                                                      message: "Impossible d'analyser la réponse du serveur", preferredStyle: .Alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                        vc.presentViewController(alert, animated: true, completion: nil)
+                    }
+                }
             } catch {
-                let alert = UIAlertController(title: "Erreur inconnue",
-                                              message: "Impossible de récupérer la réponse du serveur", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                UIApplication.sharedApplication().keyWindow?.rootViewController!.presentViewController(alert, animated: true, completion: nil)
+                response(JSON: nil)
+                if let vc = on {
+                    let alert = UIAlertController(title: "Erreur",
+                                                  message: "Impossible de récupérer la réponse du serveur", preferredStyle: .Alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                    vc.presentViewController(alert, animated: true, completion: nil)
+                }
             }
         }
         Data.sharedData.needsLoadingSpin(true)
@@ -91,6 +121,13 @@ extension Array where Element: Equatable {
         }
     }
 }
+extension Array {
+    func chunk(chunkSize : Int) -> Array<Array<Element>> {
+        return 0.stride(to: count, by: chunkSize).map {
+            Array(self[$0..<$0.advancedBy(chunkSize, limit: count)])
+        }
+    }
+}
 
 
 extension Dictionary {
@@ -107,7 +144,7 @@ extension Dictionary {
 }
 
 extension UIImage {
-    func scaleAndCrop(target: CGSize, retina: Bool, fit: Bool) -> UIImage {
+    func scaleAndCrop(target: CGSize, retina: Bool = true, fit: Bool = true, opaque: Bool = false) -> UIImage {
         let imageSize = self.size
         let width = imageSize.width
         let height = imageSize.height
@@ -156,7 +193,7 @@ extension UIImage {
         }
         
         if retina {
-            UIGraphicsBeginImageContextWithOptions(target, true, 0.0)
+            UIGraphicsBeginImageContextWithOptions(target, opaque, 0.0)
         } else {
             UIGraphicsBeginImageContext(target) // crop
         }
@@ -165,7 +202,7 @@ extension UIImage {
         thumbnailRect.origin = thumbnailPoint
         thumbnailRect.size.width  = scaledWidth
         thumbnailRect.size.height = scaledHeight
-        if fit {
+        if fit && opaque {
             UIColor.whiteColor().set()
             UIRectFill(CGRectMake(0.0, 0.0, target.width, target.height))
         }

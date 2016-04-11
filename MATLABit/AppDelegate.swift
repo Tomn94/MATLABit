@@ -21,7 +21,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         appearance.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
         window?.tintColor = UIColor(red: 1, green: 0.5, blue: 0, alpha: 1)
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(launchFinished), name: "launchFinished", object: nil)
+        
         return true
+    }
+    
+    func launchFinished() {
+        let sb = UIStoryboard(name:"Main", bundle:nil)
+        let vc = sb.instantiateInitialViewController()!
+        UIView.transitionFromView(self.window!.rootViewController!.view, toView: vc.view, duration: 0.7,
+                                  options: [.TransitionFlipFromLeft, .AllowAnimatedContent, .LayoutSubviews]) { (finished) in
+            if finished {
+                self.window!.rootViewController = vc
+            }
+        }
     }
     
     func applicationWillResignActive(application: UIApplication) {
@@ -45,7 +58,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-    
-    
 }
 
+
+extension UINavigationController {
+    public override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
+}

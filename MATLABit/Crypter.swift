@@ -10,11 +10,12 @@ import UIKit
 
 class Crypter: UITableViewController, UITextFieldDelegate {
 
-    @IBOutlet weak var inField: UITextField!
-    @IBOutlet weak var keyField: UITextField!
-    @IBOutlet weak var outField: UITextField!
-    @IBOutlet weak var btnChiffrer: UIButton!
-    @IBOutlet weak var btnDechiffrer: UIButton!
+    @IBOutlet var inField: UITextField!
+    @IBOutlet var keyField: UITextField!
+    @IBOutlet var outField: UITextField!
+    @IBOutlet var btnChiffrer: UIButton!
+    @IBOutlet var btnDechiffrer: UIButton!
+    
     
     // MARK: - Table view data source
 
@@ -31,14 +32,26 @@ class Crypter: UITableViewController, UITextFieldDelegate {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
+        if outField.text == "" {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            return
+        }
+        
         let menuPartage = UIActivityViewController(activityItems: [outField.text!], applicationActivities: nil)
         menuPartage.title = "Partager le message chiffré"
         menuPartage.excludedActivityTypes = [UIActivityTypeAddToReadingList]
+        
+        if let pop = menuPartage.popoverPresentationController {
+            pop.sourceView = tableView
+            pop.sourceRect = tableView.cellForRowAtIndexPath(indexPath)!.frame
+            pop.permittedArrowDirections = .Up
+        }
         
         presentViewController(menuPartage, animated: true) {
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
     }
+    
     
     // MARK: - Text Field delegate
     
@@ -73,6 +86,7 @@ class Crypter: UITableViewController, UITextFieldDelegate {
         }
         return false;
     }
+    
     
     // MARK: - Chiffrement niveau zéro
     

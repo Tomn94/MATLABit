@@ -12,5 +12,7 @@
 #import "JAQBlurryTableViewController.h"
 #import "UIScrollView+EmptyDataSet.h"
 #import <CommonCrypto/CommonHMAC.h>
+#import "SDWebImage/UIImageView+WebCache.h"
+#import "SDWebImage/SDWebImageDownloader.h"
 
 #endif /* MATLABit_Bridging_Header_h */

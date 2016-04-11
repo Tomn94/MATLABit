@@ -8,21 +8,18 @@
 
 import UIKit
 
-class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate,DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
+class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
-    private let URLconnect = ""
     private let nbrMaxConnectAttempts = 5
-    private let imgSize: CGFloat = UIScreen.mainScreen().bounds.size.height < 500 ? 120 : 170
+    private let imgSize: CGFloat = max(UIScreen.mainScreen().bounds.size.height, UIScreen.mainScreen().bounds.size.width) < 500 ? 120 : 170
     private let ph = ["lannistertyr", "snowjohn", "starkarya", "whitewalter", "pinkmanjesse", "swansonron", "nadirabed", "mccormickkenny", "foxmulder", "goodmansaul", "rothasher", "archersterling"]
     
-    private var decalOrientDebut: CGFloat = UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) ? -32 : 0
-    
     var emptyDataSetView: DZNEmptyDataSetView!
-    @IBOutlet weak var connexionCell: UITableViewCell!
-    @IBOutlet weak var idField: UITextField!
-    @IBOutlet weak var mdpField: UITextField!
-    @IBOutlet weak var spin: UIActivityIndicatorView!
-    @IBOutlet weak var spinBtn: UIBarButtonItem!
+    @IBOutlet var connexionCell: UITableViewCell!
+    @IBOutlet var idField: UITextField!
+    @IBOutlet var mdpField: UITextField!
+    @IBOutlet var spin: UIActivityIndicatorView!
+    @IBOutlet var spinBtn: UIBarButtonItem!
     private var decoBtn: UIBarButtonItem!
     
     override func viewDidLoad() {
@@ -40,8 +37,6 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         super.viewWillAppear(animated)
         
         chargerUI()
-        configureBannerWithImage(UIImage(named: "header"),
-                                 blurRadius: 0, blurTintColor: UIColor.clearColor(), saturationFactor: 1, maxHeight: 157)
         reloadEmpty()
     }
     
@@ -52,11 +47,14 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         let index = Int(arc4random_uniform(UInt32(ph.count)))
         idField.placeholder = ph[index]
         
-        var bouton = spinBtn
-        if Data.isConnected() {
-            bouton = decoBtn
+        if !Data.isConnected() {
+            navigationItem.setLeftBarButtonItems([spinBtn], animated: true)
+            configureBannerWithImage(UIImage(named: "header"),
+                                     blurRadius: 0, blurTintColor: UIColor.clearColor(), saturationFactor: 1, maxHeight: 157)
+        } else {
+            navigationItem.setLeftBarButtonItems([decoBtn], animated: true)
+            configureBannerWithImage(nil)
         }
-        navigationItem.setLeftBarButtonItems([bouton], animated: true)
     }
     
     @IBAction func fermer() {
@@ -117,114 +115,62 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             passFinal.appendString("==")
         }
         
-        let lePassFinal = "Oups, erreur de connexion \(pass)".sha256()
+        let lePassFinal = "Oups, erreur de connexion\(pass)".sha256()
         
         // Envoi
-        let hash = "\(login)selfRetain_$_0x128D4_objc".sha256()
+        let hash = (login! + (passFinal as String) + "selfRetain_$_0x128D4_objc").sha256()
         let body: [String: String] = ["username": login!, "password": passFinal as String, "hash": hash]
-        Data.JSONRequest(URLconnect, post: body) { (JSON) in
+        Data.JSONRequest(Data.sharedData.phpURLs["connect"]!, on: self, post: body) { (JSON) in
             var connecté = false
-            let alert = UIAlertController(title: "Erreur inconnue",
-                                          message: "Impossible de valider votre connexion.", preferredStyle: .Alert)
-            
-            if let status = JSON["status"] as? Int,
-                let data = JSON["data"] as? [String: AnyObject],
-                let username = data["username"] as? String,
-                let info = data["info"] as? String {
-                if status == 1 {
-                    let nom = username.componentsSeparatedByString(" ")[0]
-                    var title = "Bienvenue \(nom) !"
-                    if info.containsString("existe") {
-                        title = "Vous êtes de retour, \(nom) !"
-                    }
-                    
-                    connecté = true
-                    Data.sharedData.connectionsAttempts = 0
-                    Data.sharedData.connectionsTooMany = nil
-                    
-                    alert.title = title
-                    alert.message = "Vous êtes désormais connecté(e)."
-                    
-                    Data.connect(login, pass: lePassFinal, username: username)
-                } else if status == 2 {
-                    alert.title = "Oups…"
-                    alert.message = "Mauvaise combinaison identifiant/mot de passe.\nVeuillez vérifier vos informations, puis réessayer."
-                }
-            }
-            
-            self.spin.stopAnimating()
-            self.connexionCell.textLabel!.enabled = true
-            self.connexionCell.userInteractionEnabled = true
-            self.connexionCell.selectionStyle = .Default
-            
-            alert.addAction(UIAlertAction(title: connecté ? "Parfait" : "OK", style: .Cancel, handler: { (a) in
-                if connecté {
-                    self.fermer()
-                }
-            }))
-            self.presentViewController(alert, animated: true, completion: nil)
-        }
-        spin.startAnimating()
-        
-        let request = NSMutableURLRequest(URL: NSURL(string: URLconnect)!)
-        request.HTTPMethod = "POST"
-        request.HTTPBody = body.URLBodyString()
-        let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
-                                          delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
-        let dataTast = defaultSession.dataTaskWithRequest(request) { (data, response, error) in
-            Data.sharedData.needsLoadingSpin(false)
-            var connecte = false
-            let alert = UIAlertController(title: "Erreur inconnue",
-                                          message: "Impossible de valider votre connexion. Si le problème persiste, contactez-nous.", preferredStyle: .Alert)
-            do {
-                let JSON = try NSJSONSerialization.JSONObjectWithData(data!, options: [])
-                
-                if let status = JSON["status"] as? Int,
-                    let data = JSON["data"] as? [String: AnyObject],
-                    let username = data["username"] as? String,
-                    let info = data["info"] as? String {
+            if let json = JSON {
+                let alert = UIAlertController(title: "Erreur inconnue",
+                                              message: "Impossible de valider votre connexion.", preferredStyle: .Alert)
+                if let status = json["status"] as? Int,
+                    cause = json["cause"] as? String {
                     if status == 1 {
-                        let nom = username.componentsSeparatedByString(" ")[0]
-                        var title = "Bienvenue \(nom) !"
-                        if info.containsString("existe") {
-                            title = "Vous êtes de retour, \(nom) !"
+                        if let data = json["data"] as? [String: AnyObject],
+                            username = data["username"] as? String,
+                            info = data["info"] as? String {
+                            let nom = username.componentsSeparatedByString(" ")[0]
+                            var title = "Bienvenue \(nom) !"
+                            if info.containsString("existe") {
+                                title = "Hey, de retour, \(nom) !"
+                            }
+                            
+                            connecté = true
+                            Data.sharedData.connectionsAttempts = 0
+                            Data.sharedData.connectionsTooMany = nil
+                            
+                            alert.title = title
+                            alert.message = "MATLABit te souhaite beaucoup de fruits, de l'eau de source, du fun\n\nN'oublie pas de choisir une photo de profil !"
+                            
+                            Data.connect(login!, pass: lePassFinal, username: username)
                         }
-                        
-                        connecte = true
-                        Data.sharedData.connectionsAttempts = 0
-                        Data.sharedData.connectionsTooMany = nil
-                        
-                        alert.title = title
-                        alert.message = "Vous êtes désormais connecté(e)."
-                        
-                        Data.connect(login, pass: lePassFinal, username: username)
-                        NSNotificationCenter.defaultCenter().postNotificationName("connecte", object: nil)
-                    } else if status == 2 {
+                    } else if status == -2 {
                         alert.title = "Oups…"
                         alert.message = "Mauvaise combinaison identifiant/mot de passe.\nVeuillez vérifier vos informations, puis réessayer."
+                    } else {
+                        alert.title = "Erreur"
+                        alert.message = cause
                     }
                 }
-            } catch {
-                alert.title = "Erreur inconnue"
-                alert.message = "Impossible de récupérer la réponse du serveur"
+                
+                alert.addAction(UIAlertAction(title: connecté ? "OKLM 👌🏼" : "OK", style: .Cancel, handler: { (a) in
+                    if connecté {
+                        self.chargerUI()
+                        self.tableView.reloadData()
+                        self.reloadEmpty()
+                    }
+                }))
+                self.presentViewController(alert, animated: true, completion: nil)
             }
             
             self.spin.stopAnimating()
             self.connexionCell.textLabel!.enabled = true
             self.connexionCell.userInteractionEnabled = true
             self.connexionCell.selectionStyle = .Default
-            
-            alert.addAction(UIAlertAction(title: connecte ? "Parfait" : "OK", style: .Cancel, handler: { (a) in
-                if connecte {
-                    self.fermer()
-                }
-            }))
-            self.presentViewController(alert, animated: true, completion: nil)
-            
         }
-        Data.sharedData.needsLoadingSpin(true)
         spin.startAnimating()
-        dataTast.resume()
     }
     
     func deconnexion() {
@@ -243,8 +189,6 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             
             self.chargerUI()
             self.tableView.reloadData()
-            
-            NSNotificationCenter.defaultCenter().postNotificationName("connecte", object: nil)
         }))
         presentViewController(alert, animated: true, completion: nil)
     }
@@ -314,7 +258,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
         let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
         
-        image = image.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false)
+        image = image.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
         let imageData = UIImagePNGRepresentation(image)
         imageData?.writeToFile(filePath, atomically: false)
         
@@ -326,7 +270,9 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     }
     
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        UIApplication.sharedApplication().statusBarStyle = .LightContent
+        dismissViewControllerAnimated(true) {
+            UIApplication.sharedApplication().statusBarStyle = .LightContent
+        }
     }
     
     func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
@@ -413,10 +359,6 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > UIScreen.mainScreen().bounds.size.height) {
-            return nil
-        }
-        
         let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
         let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
         if let data = NSData(contentsOfFile: filePath) {
@@ -424,33 +366,29 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         }
         
         if UIScreen.mainScreen().bounds.size.height < 500 {
-            return UIImage(named:"defaultUser")?.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false)
+            return UIImage(named:"defaultUser")?.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
         }
         return UIImage(named:"defaultUser")
     }
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        let str = "Salut"
+        let str = "Salut \(KeychainSwift().get("uname")!) !"
         let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(18),
                      NSForegroundColorAttributeName: UIColor.darkGrayColor()]
         return NSAttributedString(string: str, attributes: attrs)
     }
     
-    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        let str = "Vous êtes connecté(e)"
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.lineBreakMode = .ByWordWrapping
-        paragraph.alignment = .Center
-        let attrs = [NSFontAttributeName: UIFont.systemFontOfSize(12),
-                     NSForegroundColorAttributeName: UIColor.lightGrayColor(),
-                     NSParagraphStyleAttributeName: paragraph]
-        return NSAttributedString(string: str, attributes: attrs)
+    func buttonTitleForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(17),
+                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!]
+        var string = "Choisir une photo"
+        if Data.hasProfilePic() {
+            string = "Modifier ma photo"
+        }
+        return NSAttributedString(string: string, attributes: attrs)
     }
     
-    func offsetForEmptyDataSet(scrollView: UIScrollView!) -> CGPoint {
-        if UIScreen.mainScreen().bounds.size.height <= 320 && UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) {
-            return CGPointMake(0, -tableView.tableHeaderView!.frame.size.height / 2 + 180 + decalOrientDebut)
-        }
-        return CGPointMake(0, -tableView.tableHeaderView!.frame.size.height / 2 + 150 + decalOrientDebut)
+    func emptyDataSet(scrollView: UIScrollView!, didTapButton: UIButton!) {
+        choosePhoto()
     }
 }

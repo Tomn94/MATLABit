@@ -31,6 +31,14 @@
 		6433EC511CB69D7B00784EE5 /* MATLABitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC501CB69D7B00784EE5 /* MATLABitTests.m */; };
 		6433EC5C1CB69D7B00784EE5 /* MATLABitUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */; };
 		64768DB61CB9D73400A15DFF /* go3v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64768DB51CB9D60600A15DFF /* go3v2.ttf */; };
+		647936E61CBAA98800B246CD /* FirePart.sks in Resources */ = {isa = PBXBuildFile; fileRef = 647936E41CBAA98800B246CD /* FirePart.sks */; };
+		647936EE1CBABF2000B246CD /* FirefliesPart.sks in Resources */ = {isa = PBXBuildFile; fileRef = 647936EC1CBABF2000B246CD /* FirefliesPart.sks */; };
+		647936F31CBAE14500B246CD /* Game.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 647936F21CBAE14500B246CD /* Game.xcassets */; };
+		647936F51CBB285F00B246CD /* Liste.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647936F41CBB285F00B246CD /* Liste.swift */; };
+		647936F71CBB317100B246CD /* CardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 647936F61CBB317100B246CD /* CardView.xib */; };
+		647936F91CBB425F00B246CD /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647936F81CBB425F00B246CD /* Tab.swift */; };
+		647936FB1CBBDCA900B246CD /* Launch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647936FA1CBBDCA900B246CD /* Launch.swift */; };
+		647936FE1CBBDD4300B246CD /* Launch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 647936FC1CBBDD4300B246CD /* Launch.storyboard */; };
 		6495E2401CB982B7008D7E58 /* ExplosionPart.sks in Resources */ = {isa = PBXBuildFile; fileRef = 6495E23E1CB982B7008D7E58 /* ExplosionPart.sks */; };
 		6495E2451CB98653008D7E58 /* Blade.sks in Resources */ = {isa = PBXBuildFile; fileRef = 6495E2441CB98653008D7E58 /* Blade.sks */; };
 		64ACE3C51CB883510048D89E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64ACE3C41CB883510048D89E /* GameScene.swift */; };
@@ -90,6 +98,14 @@
 		6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MATLABitUITests.m; sourceTree = "<group>"; };
 		6433EC5D1CB69D7B00784EE5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		64768DB51CB9D60600A15DFF /* go3v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = go3v2.ttf; sourceTree = "<group>"; };
+		647936E41CBAA98800B246CD /* FirePart.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = FirePart.sks; sourceTree = "<group>"; };
+		647936EC1CBABF2000B246CD /* FirefliesPart.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = FirefliesPart.sks; sourceTree = "<group>"; };
+		647936F21CBAE14500B246CD /* Game.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Game.xcassets; sourceTree = "<group>"; };
+		647936F41CBB285F00B246CD /* Liste.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Liste.swift; sourceTree = "<group>"; };
+		647936F61CBB317100B246CD /* CardView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CardView.xib; sourceTree = "<group>"; };
+		647936F81CBB425F00B246CD /* Tab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
+		647936FA1CBBDCA900B246CD /* Launch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Launch.swift; sourceTree = "<group>"; };
+		647936FD1CBBDD4300B246CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Launch.storyboard; sourceTree = "<group>"; };
 		6495E23E1CB982B7008D7E58 /* ExplosionPart.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ExplosionPart.sks; sourceTree = "<group>"; };
 		6495E2441CB98653008D7E58 /* Blade.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Blade.sks; sourceTree = "<group>"; };
 		64ACE3C41CB883510048D89E /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -218,17 +234,17 @@
 			isa = PBXGroup;
 			children = (
 				6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */,
+				647936FC1CBBDD4300B246CD /* Launch.storyboard */,
+				647936FA1CBBDCA900B246CD /* Launch.swift */,
 				6433EC3F1CB69D7B00784EE5 /* Main.storyboard */,
 				6429B1711CB7E3F200C00BCF /* AppDelegate.swift */,
 				6429B1B11CB7E8A100C00BCF /* Data.swift */,
-				6429B1C31CB85B3B00C00BCF /* Welcome.swift */,
-				64ACE3C41CB883510048D89E /* GameScene.swift */,
-				6495E23E1CB982B7008D7E58 /* ExplosionPart.sks */,
-				6429B1171CB70C3800C00BCF /* Tinder.swift */,
-				6429B1351CB71F6D00C00BCF /* Crypter.swift */,
+				647936F81CBB425F00B246CD /* Tab.swift */,
 				6429B1AF1CB7E63700C00BCF /* User.swift */,
+				64D0B3711CBC43C600E4F6BF /* Tabs */,
+				64D0B3701CBC439800E4F6BF /* Ninja */,
 				6433EC421CB69D7B00784EE5 /* Assets.xcassets */,
-				64768DB51CB9D60600A15DFF /* go3v2.ttf */,
+				647936F21CBAE14500B246CD /* Game.xcassets */,
 				6433EC471CB69D7B00784EE5 /* Info.plist */,
 				6429B1B61CB802D900C00BCF /* MATLABit-Bridging-Header.h */,
 				64ACE3C81CB951010048D89E /* SWBlade */,
@@ -265,6 +281,38 @@
 				6495E2441CB98653008D7E58 /* Blade.sks */,
 			);
 			name = SWBlade;
+			sourceTree = "<group>";
+		};
+		64D0B3701CBC439800E4F6BF /* Ninja */ = {
+			isa = PBXGroup;
+			children = (
+				64ACE3C41CB883510048D89E /* GameScene.swift */,
+				6495E23E1CB982B7008D7E58 /* ExplosionPart.sks */,
+				647936E41CBAA98800B246CD /* FirePart.sks */,
+				647936EC1CBABF2000B246CD /* FirefliesPart.sks */,
+				64768DB51CB9D60600A15DFF /* go3v2.ttf */,
+			);
+			name = Ninja;
+			sourceTree = "<group>";
+		};
+		64D0B3711CBC43C600E4F6BF /* Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				6429B1C31CB85B3B00C00BCF /* Welcome.swift */,
+				64D0B3721CBC43D100E4F6BF /* Tinder */,
+				6429B1351CB71F6D00C00BCF /* Crypter.swift */,
+			);
+			name = Tabs;
+			sourceTree = "<group>";
+		};
+		64D0B3721CBC43D100E4F6BF /* Tinder */ = {
+			isa = PBXGroup;
+			children = (
+				6429B1171CB70C3800C00BCF /* Tinder.swift */,
+				647936F61CBB317100B246CD /* CardView.xib */,
+				647936F41CBB285F00B246CD /* Liste.swift */,
+			);
+			name = Tinder;
 			sourceTree = "<group>";
 		};
 		92B24A31072616147A7C58B8 /* Frameworks */ = {
@@ -381,12 +429,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				647936EE1CBABF2000B246CD /* FirefliesPart.sks in Resources */,
 				64768DB61CB9D73400A15DFF /* go3v2.ttf in Resources */,
+				647936F71CBB317100B246CD /* CardView.xib in Resources */,
 				6495E2451CB98653008D7E58 /* Blade.sks in Resources */,
+				647936E61CBAA98800B246CD /* FirePart.sks in Resources */,
 				6495E2401CB982B7008D7E58 /* ExplosionPart.sks in Resources */,
 				6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */,
 				6433EC431CB69D7B00784EE5 /* Assets.xcassets in Resources */,
+				647936FE1CBBDD4300B246CD /* Launch.storyboard in Resources */,
 				6433EC411CB69D7B00784EE5 /* Main.storyboard in Resources */,
+				647936F31CBAE14500B246CD /* Game.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,12 +518,15 @@
 				6429B1BF1CB84D1900C00BCF /* JAQBlurryTableViewController.m in Sources */,
 				6429B1301CB713A500C00BCF /* DraggableCardView.swift in Sources */,
 				6429B12C1CB7106300C00BCF /* KolodaCardStorage.swift in Sources */,
+				647936F91CBB425F00B246CD /* Tab.swift in Sources */,
 				6429B1181CB70C3800C00BCF /* Tinder.swift in Sources */,
+				647936F51CBB285F00B246CD /* Liste.swift in Sources */,
 				6429B1C01CB84D1900C00BCF /* UIImage+Fit.m in Sources */,
 				6429B1341CB7160600C00BCF /* CustomKoladaView.swift in Sources */,
 				6429B1B81CB8308900C00BCF /* KeychainSwiftDistrib.swift in Sources */,
 				6429B1C41CB85B3B00C00BCF /* Welcome.swift in Sources */,
 				6429B1B21CB7E8A100C00BCF /* Data.swift in Sources */,
+				647936FB1CBBDCA900B246CD /* Launch.swift in Sources */,
 				6429B12E1CB7106300C00BCF /* KolodaViewAnimatior.swift in Sources */,
 				64ACE3C51CB883510048D89E /* GameScene.swift in Sources */,
 				6429B12D1CB7106300C00BCF /* KolodaView.swift in Sources */,
@@ -527,6 +583,14 @@
 				6433EC451CB69D7B00784EE5 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		647936FC1CBBDD4300B246CD /* Launch.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				647936FD1CBBDD4300B246CD /* Base */,
+			);
+			name = Launch.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
