@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="01J-lp-oVM">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <scenes>
+        <!--Launch-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" customClass="Launch" customModule="MATLABit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
+                        <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ESEOasis" translatesAutoresizingMaskIntoConstraints="NO" id="V81-Rh-FTY">
+                                <rect key="frame" x="150" y="150" width="300" height="300"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="c66-Oh-cd6"/>
+                                    <constraint firstAttribute="height" constant="300" id="k3Q-iL-Yfe"/>
+                                </constraints>
+                            </imageView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="MOE-kR-vdw">
+                                <rect key="frame" x="290" y="500" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="0.49803921569999998" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="V81-Rh-FTY" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Hcw-gv-TUq"/>
+                            <constraint firstItem="MOE-kR-vdw" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="RCu-0J-oeY"/>
+                            <constraint firstItem="MOE-kR-vdw" firstAttribute="top" secondItem="V81-Rh-FTY" secondAttribute="bottom" constant="50" id="Rcz-L9-CEs"/>
+                            <constraint firstItem="V81-Rh-FTY" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="aSl-yz-c59"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="spin" destination="MOE-kR-vdw" id="taF-XR-Cae"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="236" y="398"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="ESEOasis" width="367" height="309"/>
+    </resources>
+</document>
