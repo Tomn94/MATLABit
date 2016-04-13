@@ -103,25 +103,20 @@ class Crypter: UITableViewController, UITextFieldDelegate {
         inField.resignFirstResponder()
         keyField.resignFirstResponder()
         
-        let original = inField.text!
-        let clef = keyField.text!
-        
-        let charsM = Array(original.characters)
-        let charsK = Array(clef.characters)
+        let in16 = Array(inField.text!.utf16)
+        let ke16 = Array(keyField.text!.utf16)
         
         var j = 0
-        let result = NSMutableString()
+        var result = ""
         
-        for charM in charsM {
-            let charMUTF = String(charM).utf16
-            let charKUTF = String(charsK[j]).utf16
-            let res = charMUTF[charMUTF.startIndex] ^ charKUTF[charKUTF.startIndex]
+        for inChar in in16 {
+            let res = inChar ^ ke16[j]
+            result += String(format: "%04X", res)
+            
             j += 1
-            if j == charsK.count {
+            if j == ke16.count {
                 j = 0
             }
-            
-            result.appendFormat("%04X", res)
         }
         
         outField.text = result.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
@@ -131,34 +126,30 @@ class Crypter: UITableViewController, UITextFieldDelegate {
         inField.resignFirstResponder()
         keyField.resignFirstResponder()
         
-        let original: NSString = inField.text!
-        let clef = keyField.text!
-        
-        let nbrChar = original.length / 4
-        let charsK = Array(clef.characters)
+        let original = inField.text!
+        let nbrChar = original.characters.count / 4
+        let ke16 = Array(keyField.text!.utf16)
         
         var j = 0
-        let result = NSMutableString()
+        var result = Array<UInt16>()
         
         for i in 0 ..< nbrChar {
             var originalChar: UInt32 = 0
-            let hexPart = original.substringWithRange(NSMakeRange(i * 4, 4))
+            let range = original.startIndex.advancedBy(i * 4) ..< original.startIndex.advancedBy((i * 4) + 4)
+            let hexPart = original.substringWithRange(range)
             let scanner = NSScanner(string: hexPart)
             scanner.scanHexInt(&originalChar)
             
-            let charKUTF = String(charsK[j]).utf16
-            let charK16: UInt16 = charKUTF[charKUTF.startIndex]
-            let originalChar16: UInt16 = UInt16(originalChar)
-            let res = originalChar16 ^ charK16
+            let res = UInt16(originalChar) ^ ke16[j]
+            result.append(res)
             
             j += 1
-            if j == charsK.count {
+            if j == ke16.count {
                 j = 0
             }
-            
-            result.appendFormat("%c", res)
         }
         
-        outField.text = result.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        let final = String(utf16CodeUnits: result, count: result.count)
+        outField.text = final.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
     }
 }

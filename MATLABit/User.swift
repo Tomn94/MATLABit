@@ -69,6 +69,10 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         idField.resignFirstResponder()
         mdpField.resignFirstResponder()
         
+        if uploading {
+            return
+        }
+        
         let login = idField.text?.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
         let pass: NSString = mdpField.text!
         
@@ -204,6 +208,10 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     }
     
     func deconnexion() {
+        if uploading {
+            return
+        }
+        
         let alert = UIAlertController(title: "Veux-tu vraiment te déconnecter ?",
                                       message: "On s'amusait bien !", preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: "Annuler", style: .Cancel, handler: nil))
