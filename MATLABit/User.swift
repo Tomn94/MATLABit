@@ -164,6 +164,8 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
                                 })
                             }
                             
+                            self.idField.text = ""
+                            self.mdpField.text = ""
                             connecté = true
                             Data.sharedData.connectionsAttempts = 0
                             Data.sharedData.connectionsTooMany = nil
@@ -243,9 +245,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     }
     
     func removePhoto(showAlert: Bool = true) {
-        removePhotoDisk(showAlert)
         delPic(showAlert)
-        reloadEmpty()
     }
     
     func removePhotoDisk(showAlert: Bool = true) {
@@ -287,7 +287,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     
     // MARK: Upload
     
-    func uploadPic() {
+    func uploadPic(selectedImage: UIImage) {
         
         if let login = KeychainSwift().get("login"),
             passw = KeychainSwift().get("passw") {
@@ -319,76 +319,71 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
                 httpBody.appendData((param.1.URLencode() + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
             }
             
-            // Récupération de l'image JPEG stockée par l'app, en ≈ 150×150
-            let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-            let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
-            if let data = NSData(contentsOfFile: filePath) {
-                if let image = UIImage(data: data) {
-                    let pic = image.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
-                    if let imageData = UIImageJPEGRepresentation(pic, 1.0) {
-                        // Maintenant qu'on a l'image de type NSData, on la fout dans la requête
-                        httpBody.appendData(("--" + boundaryConstant + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                        httpBody.appendData(("Content-Disposition: form-data; name=\"" + fileParamConstant + "\"; filename=\"image.jpg\"\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                        httpBody.appendData("Content-Type: image/jpeg\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-                        httpBody.appendData(imageData)
-                        httpBody.appendData("\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-                        
-                        // On finit
-                        httpBody.appendData(("--" + boundaryConstant + "--\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                        request.HTTPBody = httpBody
-                        request.setValue(String(httpBody.length), forHTTPHeaderField: "Content-Length")
-                        
-                        // On envoie tout
-                        let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
-                                                          delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
-                        let dataTast = defaultSession.dataTaskWithRequest(request) { (data, resp, error) in
-                            self.spin.startAnimating()
-                            Data.sharedData.needsLoadingSpin(false)
-                            do {
-                                if let d = data {
-                                    let JSON = try NSJSONSerialization.JSONObjectWithData(d, options: [])
-                                    if let status = JSON["status"] as? Int,
-                                        cause = JSON["cause"] as? String {
-                                        if status != 1 {
-                                            self.removePhotoDisk(false)
-                                            let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                                          message: cause, preferredStyle: .Alert)
-                                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                                            self.presentViewController(alert, animated: true, completion: nil)
-                                        }
-                                    } else {
-                                        self.removePhotoDisk(false)
-                                        let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                                      message: "Impossible de lire la réponse du serveur", preferredStyle: .Alert)
-                                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                                        self.presentViewController(alert, animated: true, completion: nil)
-                                    }
+            // Récupération de l'image JPEG sélectionnée, en ≈ 150×150
+            let pic = selectedImage.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
+            if let imageData = UIImageJPEGRepresentation(pic, 1.0) {
+                // Maintenant qu'on a l'image de type NSData, on la fout dans la requête
+                httpBody.appendData(("--" + boundaryConstant + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                httpBody.appendData(("Content-Disposition: form-data; name=\"" + fileParamConstant + "\"; filename=\"image.jpg\"\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                httpBody.appendData("Content-Type: image/jpeg\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+                httpBody.appendData(imageData)
+                httpBody.appendData("\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+                
+                // On finit
+                httpBody.appendData(("--" + boundaryConstant + "--\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                request.HTTPBody = httpBody
+                request.setValue(String(httpBody.length), forHTTPHeaderField: "Content-Length")
+                
+                // On envoie tout
+                let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
+                                                  delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
+                let dataTast = defaultSession.dataTaskWithRequest(request) { (data, resp, error) in
+                    self.spin.startAnimating()
+                    Data.sharedData.needsLoadingSpin(false)
+                    do {
+                        if let d = data {
+                            let JSON = try NSJSONSerialization.JSONObjectWithData(d, options: [])
+                            if let status = JSON["status"] as? Int,
+                                cause = JSON["cause"] as? String {
+                                if status == 1 {
+                                    let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+                                    let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
+                                    imageData.writeToFile(filePath, atomically: false)
+                                    self.reloadEmpty()
                                 } else {
-                                    self.removePhotoDisk(false)
                                     let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                                  message: "Impossible d'analyser la réponse du serveur", preferredStyle: .Alert)
+                                                                  message: cause, preferredStyle: .Alert)
                                     alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
                                     self.presentViewController(alert, animated: true, completion: nil)
                                 }
-                            } catch {
-                                self.removePhotoDisk(false)
+                            } else {
                                 let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                              message: "Impossible de récupérer la réponse du serveur", preferredStyle: .Alert)
+                                                              message: "Impossible de lire la réponse du serveur", preferredStyle: .Alert)
                                 alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
                                 self.presentViewController(alert, animated: true, completion: nil)
                             }
-                            self.uploading = false
+                        } else {
+                            let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
+                                                          message: "Impossible d'analyser la réponse du serveur", preferredStyle: .Alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                            self.presentViewController(alert, animated: true, completion: nil)
                         }
-                        uploading = true
-                        spin.startAnimating()
-                        Data.sharedData.needsLoadingSpin(true)
-                        dataTast.resume()
+                    } catch {
+                        let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
+                                                      message: "Impossible de récupérer la réponse du serveur", preferredStyle: .Alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                        self.presentViewController(alert, animated: true, completion: nil)
                     }
+                    self.uploading = false
                 }
+                uploading = true
+                spin.startAnimating()
+                Data.sharedData.needsLoadingSpin(true)
+                dataTast.resume()
             }
         }
     }
-    
+
     func delPic(showAlert: Bool = true) {
         if let login = KeychainSwift().get("login"),
             passw = KeychainSwift().get("passw") {
@@ -400,16 +395,25 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
                 if let json = JSON {
                     if let status = json.valueForKey("status") as? Int,
                         cause = json.valueForKey("cause") as? String {
+                        if status != -10 {
+                            self.removePhotoDisk(showAlert)
+                            self.reloadEmpty()
+                        }
                         if status != 1 && showAlert {
                             let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: cause, preferredStyle: .Alert)
                             alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
                             self.presentViewController(alert, animated: true, completion: nil)
                         }
                     } else if showAlert {
+                        self.removePhotoDisk(showAlert)
+                        self.reloadEmpty()
                         let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: "Erreur serveur", preferredStyle: .Alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
                         self.presentViewController(alert, animated: true, completion: nil)
                     }
+                } else {
+                    self.removePhotoDisk(showAlert)
+                    self.reloadEmpty()
                 }
             }
             uploading = true
@@ -420,15 +424,8 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     // MARK: Image picker delegate
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        var image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
-        
-        image = image.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
-        let imageData = UIImageJPEGRepresentation(image, 1.0)
-        imageData?.writeToFile(filePath, atomically: false)
-        
-        uploadPic()
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        uploadPic(image)
         
         reloadEmpty()
         
