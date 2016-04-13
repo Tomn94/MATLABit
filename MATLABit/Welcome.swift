@@ -163,7 +163,11 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
             if indexPath.row == 0 {
                 rang = "🏆" + rang
             } else if indexPath.row == 1 {
-                rang = "🏅" + rang
+                if #available(iOS 9.1, *) {
+                    rang = "🏅" + rang
+                } else {
+                    rang = "💪" + rang
+                }
             } else if indexPath.row == 2 {
                 rang = "⚡️" + rang
             } else if indexPath.row == 3 {

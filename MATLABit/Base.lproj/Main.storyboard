@@ -145,6 +145,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fYC-bi-6NW">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <string key="text">Plus personne à matcher
+Si avec ça tu n'as pas une touche…
+Va vite voir ta liste BDE et tes demandes !</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cSb-3E-Rg7">
                                 <rect key="frame" x="0.0" y="64" width="600" height="63"/>
                                 <subviews>
@@ -228,6 +237,7 @@
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="fYC-bi-6NW" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leading" id="2M3-BU-Vma"/>
                             <constraint firstItem="cSb-3E-Rg7" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leadingMargin" constant="-20" id="46O-xJ-J7f"/>
                             <constraint firstItem="D2N-2h-wGX" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leading" id="64X-Yd-WXY"/>
                             <constraint firstItem="iDW-lx-Y61" firstAttribute="centerX" secondItem="QS5-Rx-YEW" secondAttribute="centerX" id="6Y3-pd-Zew"/>
@@ -240,13 +250,16 @@
                             <constraint firstAttribute="trailingMargin" secondItem="cSb-3E-Rg7" secondAttribute="trailing" constant="-20" id="e2Z-Qj-78f"/>
                             <constraint firstItem="D2N-2h-wGX" firstAttribute="top" secondItem="cSb-3E-Rg7" secondAttribute="bottom" constant="-80" id="eQh-3H-R7q"/>
                             <constraint firstItem="Djb-ko-YwX" firstAttribute="top" secondItem="D2N-2h-wGX" secondAttribute="bottom" constant="-100" id="hsb-yA-Ecw"/>
+                            <constraint firstAttribute="trailing" secondItem="fYC-bi-6NW" secondAttribute="trailing" id="iWD-aj-o7e"/>
+                            <constraint firstItem="fYC-bi-6NW" firstAttribute="top" secondItem="QS5-Rx-YEW" secondAttribute="top" id="lj8-4D-v11"/>
+                            <constraint firstAttribute="bottom" secondItem="fYC-bi-6NW" secondAttribute="bottom" id="o53-xF-IA4"/>
                             <constraint firstItem="cSb-3E-Rg7" firstAttribute="top" secondItem="L7p-HK-0SC" secondAttribute="bottom" id="wnk-bm-rPx"/>
                             <constraint firstItem="86W-Le-zrF" firstAttribute="centerX" secondItem="QS5-Rx-YEW" secondAttribute="centerX" id="yrn-vO-Fah"/>
                             <constraint firstItem="iDW-lx-Y61" firstAttribute="bottom" secondItem="86W-Le-zrF" secondAttribute="bottom" id="zkL-KA-lhS"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="AdopteUn🍑.com" id="w3V-zj-6cW">
-                        <barButtonItem key="backBarButtonItem" title="Matches" id="uMS-2g-frB"/>
+                        <barButtonItem key="backBarButtonItem" title="Retour" id="uMS-2g-frB"/>
                         <barButtonItem key="leftBarButtonItem" image="user" id="61X-eE-CZj">
                             <connections>
                                 <segue destination="8jO-26-RMF" kind="presentation" id="7JA-3U-jfd"/>
@@ -260,6 +273,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="contentView" destination="QS5-Rx-YEW" id="kCn-CI-FQO"/>
+                        <outlet property="emptyLabel" destination="fYC-bi-6NW" id="KIo-jB-NYo"/>
                         <outlet property="kolodaView" destination="D2N-2h-wGX" id="Jth-c7-ptA"/>
                         <outlet property="listeBtn" destination="02W-68-Xsl" id="s05-lT-n5L"/>
                         <outlet property="noBtn" destination="puw-Z3-CJb" id="ZZ0-dh-0vz"/>
@@ -280,7 +294,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="lisetCell" textLabel="LHa-Ln-NAR" detailTextLabel="WsY-We-UVz" imageView="rRE-sT-gMd" style="IBUITableViewCellStyleSubtitle" id="OcI-dh-cW7">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="listeCell" textLabel="LHa-Ln-NAR" detailTextLabel="WsY-We-UVz" imageView="rRE-sT-gMd" style="IBUITableViewCellStyleSubtitle" id="OcI-dh-cW7">
                                 <rect key="frame" x="0.0" y="92" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="OcI-dh-cW7" id="lK0-Nb-NpP">
@@ -294,8 +308,8 @@
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="T'a aussi ajouté ! · Est dans 10 autres listes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="WsY-We-UVz">
-                                            <rect key="frame" x="54" y="25" width="226" height="14"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Est dans 10 autres listes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="WsY-We-UVz">
+                                            <rect key="frame" x="54" y="25" width="128" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -811,7 +825,7 @@ C'est sécurisé (OK peut-être pas autant que le Portail ESEO…), on ne récup
         <image name="lock" width="24" height="24"/>
         <image name="lockSel" width="24" height="24"/>
         <image name="no" width="50" height="50"/>
-        <image name="placeholder" width="1" height="1"/>
+        <image name="placeholder" width="44" height="44"/>
         <image name="user" width="24" height="24"/>
         <image name="yes" width="50" height="50"/>
     </resources>

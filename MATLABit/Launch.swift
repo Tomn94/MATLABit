@@ -17,7 +17,8 @@ class Launch: UIViewController {
         super.viewDidLoad()
 
         spin.startAnimating()
-        Data.JSONRequest("https://web59.secure-secure.co.uk/francoisle.fr/wdidy/faq/data.json", on: self, post: nil) { (JSON) in
+        Data.JSONRequest("https://web59.secure-secure.co.uk/francoisle.fr/wdidy/faq/data.json", on: self, post: nil, cache: .ReloadIgnoringLocalCacheData) { (JSON) in
+            self.spin.stopAnimating()
             if let json = JSON {
                 if let status = json["status"] as? Int,
                     data   = json["data"] as? [String: AnyObject],
@@ -26,10 +27,13 @@ class Launch: UIViewController {
                     harder = data["harder"] as? Double,
                     php    = data["php"] as? [String: String],
                     _ = php["connect"],
+                    _ = php["addPic"],
+                    _ = php["delPic"],
                     _ = php["getScores"],
                     _ = php["sendScore"],
                     _ = php["getMatches"],
                     _ = php["sendMatch"],
+                    _ = php["delMatch"],
                     _ = php["getList"] {
                     if status == 200 {
                         Data.sharedData.fbURL = NSURL(string: fb)
@@ -58,7 +62,6 @@ class Launch: UIViewController {
                 }
             }
         }
-        spin.startAnimating()
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {

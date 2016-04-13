@@ -8,8 +8,7 @@
 
 import UIKit
 import pop
-
-private let numberOfCards: UInt = 5
+import SDWebImage
 
 class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
@@ -20,6 +19,8 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     @IBOutlet var noBtn: UIImageView!
     @IBOutlet var yesBtn: UIImageView!
     @IBOutlet var listeBtn: UIBarButtonItem!
+    @IBOutlet var emptyLabel: UILabel!
+    var matches = Array<[String : String]>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,12 +40,64 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let hasAccess = Data.isConnected() && Data.hasProfilePic();
+        let hasAccess = Data.isConnected() && Data.hasProfilePic()
         tableView.hidden = hasAccess
         navigationItem.rightBarButtonItem = hasAccess ? listeBtn : nil
+        
         if !hasAccess {
             tableView.reloadEmptyDataSet()
+        } else {
+            fetchData()
         }
+    }
+    
+    func fetchData() {
+        if let login = KeychainSwift().get("login"),
+            passw = KeychainSwift().get("passw") {
+            let body = ["client": login,
+                        "password": passw,
+                        "hash": ("Discipliné666" + login + passw).sha256()]
+            Data.JSONRequest(Data.sharedData.phpURLs["getMatches"]!, on: self, post: body) { (JSON) in
+                if let json = JSON {
+                    if let status = json.valueForKey("status") as? Int,
+                        data = json.valueForKey("data") as? [String: AnyObject],
+                        people = data["people"] as? Array<[String: String]> {
+                        if status == 1 {
+                            let animation = CATransition()
+                            animation.duration = 0.25
+                            animation.type = kCATransitionFade
+                            self.tableView.layer.addAnimation(animation, forKey: nil)
+                            
+                            if self.matches.count > 0 {
+                            let oldPeople = people.filter({ (elementServ: [String: String]) -> Bool in
+                                self.matches.contains({ (elementApp: [String: String]) -> Bool in
+                                    elementApp["login"] == elementServ["login"]
+                                })
+                            })
+                            let newPeople = people.filter({ (elementServ: [String: String]) -> Bool in
+                                !self.matches.contains({ (elementApp: [String: String]) -> Bool in
+                                    elementApp["login"] == elementServ["login"]
+                                })
+                            })
+                            let total: Array<[String: String]> = oldPeople + newPeople
+                            self.matches = total
+                            } else {
+                                self.matches = people
+                            }
+                        } else {
+                            self.matches = Array<[String: String]>()
+                        }
+                    } else {
+                        self.matches = Array<[String: String]>()
+                    }
+                    self.loadFetchedData()
+                }
+            }
+        }
+    }
+    
+    func loadFetchedData() {
+        kolodaView.reloadData()
     }
     
     
@@ -99,11 +152,51 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
 //MARK: KolodaViewDelegate
 extension Tinder: KolodaViewDelegate {
     
+    func kolodaDidResetCard(koloda: KolodaView) {
+        UIView.animateWithDuration(0.5) {
+            self.emptyLabel.alpha = 0.0
+        }
+    }
+    
+    func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
+        if direction == .Right {
+            if let login = KeychainSwift().get("login"),
+                passw = KeychainSwift().get("passw"),
+                coeur = matches[Int(index)]["login"] {
+                let body = ["client": login,
+                            "password": passw,
+                            "coeur": coeur,
+                            "hash": ("AdolfUnChien.com" + login + coeur + passw).sha256()]
+                Data.JSONRequest(Data.sharedData.phpURLs["sendMatch"]!, on: self, post: body) { (JSON) in
+                    if let json = JSON {
+                        if let status = json.valueForKey("status") as? Int,
+                            cause = json.valueForKey("cause") as? String {
+                            if status != 1 {
+                                let alert = UIAlertController(title: "Erreur lors de l'ajout à vos touches", message: cause, preferredStyle: .Alert)
+                                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                                self.presentViewController(alert, animated: true, completion: nil)
+                            }
+                        } else {
+                            let alert = UIAlertController(title: "Erreur lors de l'ajout à vos touches", message: "Erreur serveur", preferredStyle: .Alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func kolodaDidRunOutOfCards(koloda: KolodaView) {
-        kolodaView.resetCurrentCardIndex()
+//        kolodaView.resetCurrentCardIndex()
+        UIView.animateWithDuration(0.5) { 
+            self.emptyLabel.alpha = 1.0
+        }
+        fetchData()
     }
     
     func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
+        
     }
     
     func kolodaShouldApplyAppearAnimation(koloda: KolodaView) -> Bool {
@@ -130,31 +223,38 @@ extension Tinder: KolodaViewDelegate {
 extension Tinder: KolodaViewDataSource {
     
     func kolodaNumberOfCards(koloda: KolodaView) -> UInt {
-        return numberOfCards
+        return UInt(matches.count)
     }
     
     func koloda(koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
-//        return UIImageView(image: UIImage(named: "cards_\(index + 1)"))
-        
-        
         let nib = UINib(nibName: "CardView", bundle: nil)
         let card = nib.instantiateWithOwner(self, options: nil).first as! CardView
         card.layer.cornerRadius = 10
         card.layer.masksToBounds = true
         
-        card.image.image = Data.sharedData.logo
-        card.label.text  = "Jean Pierre"
+        let match = matches[Int(index)]
+        card.label.text = match["name"]
+        SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: match["img"]!), options: [],
+                                                               progress: nil, completed: { (image, error, cacheType, finished, url) in
+                                                                if image != nil {
+                                                                    card.image.image = image
+                                                                }
+        })
         
         return card
     }
-    /*
+    
     func koloda(koloda: KolodaView, viewForCardOverlayAtIndex index: UInt) -> OverlayView? {
-        return NSBundle.mainBundle().loadNibNamed("CustomOverlayView",
-                                                  owner: self, options: nil)[0] as? OverlayView
-    }*/
+        let overlay = UINib(nibName: "CardOverlay", bundle: nil).instantiateWithOwner(self, options: nil).first as! CardOverlay
+        overlay.layer.cornerRadius = 10
+        overlay.layer.masksToBounds = true
+        return overlay
+    }
 }
+
 
 class CardView: UIView {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var label: UILabel!
 }
+

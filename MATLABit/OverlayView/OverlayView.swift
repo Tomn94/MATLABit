@@ -18,5 +18,5 @@ public enum OverlayMode{
 public class OverlayView: UIView {
     
     public var overlayState:OverlayMode = OverlayMode.None
-
+    
 }

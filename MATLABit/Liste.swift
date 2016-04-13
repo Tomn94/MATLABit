@@ -20,35 +20,147 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         tableView.backgroundView = view
         tableView.tableFooterView = UIView()
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let login = KeychainSwift().get("login"),
+            passw = KeychainSwift().get("passw") {
+            let body = ["client": login,
+                        "password": passw,
+                        "hash": ("JavaleduSwift,Taylor" + login + passw).sha256()]
+            Data.JSONRequest(Data.sharedData.phpURLs["getList"]!, on: self, post: body) { (JSON) in
+                if let json = JSON {
+                    if let status = json.valueForKey("status") as? Int,
+                        data = json.valueForKey("data") as? [String: AnyObject],
+                        moi = data["moi"] as? Array<[String: AnyObject]>,
+                        eux = data["eux"] as? Array<[String: AnyObject]> {
+                        if status == 1 {
+                            let animation = CATransition()
+                            animation.duration = 0.25
+                            animation.type = kCATransitionFade
+                            self.tableView.layer.addAnimation(animation, forKey: nil)
+                            Data.sharedData.team = [moi, eux]
+                        } else {
+                            Data.sharedData.team = [Array<[String: AnyObject]>(), Array<[String: AnyObject]>()]
+                        }
+                    } else {
+                        Data.sharedData.team = [Array<[String: AnyObject]>(), Array<[String: AnyObject]>()]
+                    }
+                    self.loadFetchedData()
+                }
+            }
+        }
+    }
+    
+    func loadFetchedData() {
+        let hasData = Data.sharedData.team[0].count > 0 && Data.sharedData.team[1].count > 0
+        tableView.backgroundColor = hasData ? UIColor.whiteColor() : UIColor.groupTableViewBackgroundColor()
+        tableView.tableFooterView = hasData ? nil : UIView()
+        
+        tableView.reloadData()
+    }
 
+    
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 0
+        return Data.sharedData.team.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return Data.sharedData.team[section].count
+    }
+    
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if Data.sharedData.team[0].count == 0 && Data.sharedData.team[1].count == 0 {
+            return nil
+        } else if section == 1 {
+            if Data.sharedData.team[1].count > 1 {
+                return "Tu as une touche ! Ils te veulent :"
+            } else if Data.sharedData.team[1].count > 0 {
+                return "Tu as une touche ! Il/elle te veut :"
+            } else {
+                return "Tu n'as aucune touche"
+            }
+        }
+        return "Ta liste"
     }
 
-    /*
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("listeCell", forIndexPath: indexPath)
 
-        // Configure the cell...
+        let data = Data.sharedData.team[indexPath.section][indexPath.row]
+        cell.textLabel?.text = data["name"] as? String
+        
+        var sub = ""
+        var verbe = "a"
+        var pronom = "sa liste"
+        if let nbrOthers = data["others"] as? Int {
+            if indexPath.section != 0 {
+                sub = "T'es dans sa liste avec "
+            }
+            
+            if nbrOthers > 1 {
+                sub += String(nbrOthers) + " autres personnes"
+                verbe = "ont"
+                pronom = "la leur"
+            } else if nbrOthers == 1 {
+                sub += "1 autre personne"
+            } else if indexPath.section == 0 {
+                sub = "Personne à part toi ne l'a ajouté… 😏"
+            } else {
+                sub = "T'es tout seul dans sa liste… 😏"
+            }
+            
+            if indexPath.section == 0 && nbrOthers >= 1 {
+                sub += " l'" + verbe + " aussi dans " + pronom
+            }
+        }
+        cell.detailTextLabel?.text = sub
+        
+        if let url = data["img"] as? String {
+            cell.imageView?.sd_setImageWithURL(NSURL(string: url), placeholderImage: UIImage(named: "placeholder"))
+        } else {
+            cell.imageView?.image = UIImage(named: "placeholder")
+        }
 
         return cell
     }
-    */
 
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
+        return indexPath.section == 0
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            if let coeur = Data.sharedData.team[0][indexPath.row]["login"] as? String,
+                login = KeychainSwift().get("login"),
+                passw = KeychainSwift().get("passw") {
+                let body = ["coeur": coeur,
+                            "client": login,
+                            "password": passw,
+                            "hash": ("jeSuisTresSerieuxxxx" + login + coeur + passw).sha256()]
+                
+                Data.JSONRequest(Data.sharedData.phpURLs["delMatch"]!, post: body) { (JSON) in
+                    if let json = JSON,
+                        status = json.valueForKey("status") as? Int,
+                        cause = json.valueForKey("cause") as? String {
+                        if status == 1 {
+                            Data.sharedData.team[0].removeAtIndex(indexPath.row)
+                            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                        } else {
+                            let alert = UIAlertController(title: "Erreur lors la suppresion", message: cause, preferredStyle: .Alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        }
+                    } else {
+                        let alert = UIAlertController(title: "Erreur lors la suppresion", message: "Erreur serveur", preferredStyle: .Alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                        self.presentViewController(alert, animated: true, completion: nil)
+                    }
+                }
+            }
         }
     }
     

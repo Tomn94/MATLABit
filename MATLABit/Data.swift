@@ -22,6 +22,7 @@ class Data {
     var phpURLs = [String: String]()
     
     var scores = Array<(String, Int)>()
+    var team = [Array<[String: AnyObject]>(), Array<[String: AnyObject]>()]
     
     private var pendingConnections = 0
     
@@ -42,7 +43,7 @@ class Data {
     
     class func hasProfilePic() -> Bool {
         let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
+        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
         return NSData(contentsOfFile: filePath) != nil
     }
     
@@ -57,9 +58,9 @@ class Data {
         KeychainSwift().clear()
     }
     
-    class func JSONRequest(url: String, on: UIViewController? = nil, post: [String: String]? = nil,
+    class func JSONRequest(url: String, on: UIViewController? = nil, post: [String: String]? = nil, cache: NSURLRequestCachePolicy = .UseProtocolCachePolicy,
                            response: (JSON: AnyObject?) -> Void = { _ in }) {
-        let request = NSMutableURLRequest(URL: NSURL(string: url)!)
+        let request = NSMutableURLRequest(URL: NSURL(string: url)!, cachePolicy: cache, timeoutInterval: 60)
         if let postData = post {
             request.HTTPMethod = "POST"
             request.HTTPBody = postData.URLBodyString()
@@ -67,17 +68,20 @@ class Data {
         let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
                                           delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
         let dataTast = defaultSession.dataTaskWithRequest(request) { (data, resp, error) in
+            var messageErreur = ""
+            if let err = error {
+                messageErreur = "\n" + err.localizedDescription
+            }
             Data.sharedData.needsLoadingSpin(false)
             do {
                 if let d = data {
                     let JSON = try NSJSONSerialization.JSONObjectWithData(d, options: [])
-                    print(JSON)
                     response(JSON: JSON)
                 } else {
                     response(JSON: nil)
                     if let vc = on {
                         let alert = UIAlertController(title: "Erreur",
-                                                      message: "Impossible d'analyser la réponse du serveur", preferredStyle: .Alert)
+                                                      message: "Impossible d'analyser la réponse du serveur" + messageErreur, preferredStyle: .Alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
                         vc.presentViewController(alert, animated: true, completion: nil)
                     }
@@ -86,7 +90,7 @@ class Data {
                 response(JSON: nil)
                 if let vc = on {
                     let alert = UIAlertController(title: "Erreur",
-                                                  message: "Impossible de récupérer la réponse du serveur", preferredStyle: .Alert)
+                                                  message: "Impossible de récupérer la réponse du serveur" + messageErreur, preferredStyle: .Alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
                     vc.presentViewController(alert, animated: true, completion: nil)
                 }
@@ -105,6 +109,15 @@ extension String {
         CC_SHA256(data.bytes, CC_LONG(data.length), UnsafeMutablePointer(res!.mutableBytes))
         
         return "\(res!)".stringByReplacingOccurrencesOfString("<", withString: "").stringByReplacingOccurrencesOfString(">", withString: "").stringByReplacingOccurrencesOfString(" ", withString: "")
+    }
+    
+    func URLencode() -> String {
+        let characters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
+        characters.removeCharactersInString("&")
+        guard let encodedString = self.stringByAddingPercentEncodingWithAllowedCharacters(characters) else {
+            return self
+        }
+        return encodedString
     }
 }
 

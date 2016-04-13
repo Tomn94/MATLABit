@@ -30,6 +30,7 @@
 		6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */; };
 		6433EC511CB69D7B00784EE5 /* MATLABitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC501CB69D7B00784EE5 /* MATLABitTests.m */; };
 		6433EC5C1CB69D7B00784EE5 /* MATLABitUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */; };
+		6473C7261CBD4C740066D993 /* CardOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6473C7251CBD4C740066D993 /* CardOverlay.swift */; };
 		64768DB61CB9D73400A15DFF /* go3v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64768DB51CB9D60600A15DFF /* go3v2.ttf */; };
 		647936E61CBAA98800B246CD /* FirePart.sks in Resources */ = {isa = PBXBuildFile; fileRef = 647936E41CBAA98800B246CD /* FirePart.sks */; };
 		647936EE1CBABF2000B246CD /* FirefliesPart.sks in Resources */ = {isa = PBXBuildFile; fileRef = 647936EC1CBABF2000B246CD /* FirefliesPart.sks */; };
@@ -43,6 +44,7 @@
 		6495E2451CB98653008D7E58 /* Blade.sks in Resources */ = {isa = PBXBuildFile; fileRef = 6495E2441CB98653008D7E58 /* Blade.sks */; };
 		64ACE3C51CB883510048D89E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64ACE3C41CB883510048D89E /* GameScene.swift */; };
 		64ACE3C71CB886170048D89E /* SWBlade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64ACE3C61CB886170048D89E /* SWBlade.swift */; };
+		64D0B3741CBC65B400E4F6BF /* CardOverlay.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64D0B3731CBC65B400E4F6BF /* CardOverlay.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,7 @@
 		6433EC571CB69D7B00784EE5 /* MATLABitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MATLABitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6433EC5B1CB69D7B00784EE5 /* MATLABitUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MATLABitUITests.m; sourceTree = "<group>"; };
 		6433EC5D1CB69D7B00784EE5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6473C7251CBD4C740066D993 /* CardOverlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardOverlay.swift; sourceTree = "<group>"; };
 		64768DB51CB9D60600A15DFF /* go3v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = go3v2.ttf; sourceTree = "<group>"; };
 		647936E41CBAA98800B246CD /* FirePart.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = FirePart.sks; sourceTree = "<group>"; };
 		647936EC1CBABF2000B246CD /* FirefliesPart.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = FirefliesPart.sks; sourceTree = "<group>"; };
@@ -110,6 +113,7 @@
 		6495E2441CB98653008D7E58 /* Blade.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Blade.sks; sourceTree = "<group>"; };
 		64ACE3C41CB883510048D89E /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		64ACE3C61CB886170048D89E /* SWBlade.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SWBlade.swift; sourceTree = "<group>"; };
+		64D0B3731CBC65B400E4F6BF /* CardOverlay.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CardOverlay.xib; sourceTree = "<group>"; };
 		A19CBDAC76A2CCB186B13E4A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		ECDBB9F04E93D026662F99B7 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -310,6 +314,8 @@
 			children = (
 				6429B1171CB70C3800C00BCF /* Tinder.swift */,
 				647936F61CBB317100B246CD /* CardView.xib */,
+				6473C7251CBD4C740066D993 /* CardOverlay.swift */,
+				64D0B3731CBC65B400E4F6BF /* CardOverlay.xib */,
 				647936F41CBB285F00B246CD /* Liste.swift */,
 			);
 			name = Tinder;
@@ -393,6 +399,7 @@
 				TargetAttributes = {
 					6433EC2F1CB69D7A00784EE5 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 7HW87TV8LC;
 					};
 					6433EC4B1CB69D7B00784EE5 = {
 						CreatedOnToolsVersion = 7.3;
@@ -429,6 +436,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64D0B3741CBC65B400E4F6BF /* CardOverlay.xib in Resources */,
 				647936EE1CBABF2000B246CD /* FirefliesPart.sks in Resources */,
 				64768DB61CB9D73400A15DFF /* go3v2.ttf in Resources */,
 				647936F71CBB317100B246CD /* CardView.xib in Resources */,
@@ -517,6 +525,7 @@
 				6429B1361CB71F6D00C00BCF /* Crypter.swift in Sources */,
 				6429B1BF1CB84D1900C00BCF /* JAQBlurryTableViewController.m in Sources */,
 				6429B1301CB713A500C00BCF /* DraggableCardView.swift in Sources */,
+				6473C7261CBD4C740066D993 /* CardOverlay.swift in Sources */,
 				6429B12C1CB7106300C00BCF /* KolodaCardStorage.swift in Sources */,
 				647936F91CBB425F00B246CD /* Tab.swift in Sources */,
 				6429B1181CB70C3800C00BCF /* Tinder.swift in Sources */,
@@ -686,13 +695,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
 					"iPAD=\"(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)\"",
 				);
 				INFOPLIST_FILE = MATLABit/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -707,13 +717,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
 					"iPAD=\"(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)\"",
 				);
 				INFOPLIST_FILE = MATLABit/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tomn.MATLABit;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
@@ -21,6 +22,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     @IBOutlet var spin: UIActivityIndicatorView!
     @IBOutlet var spinBtn: UIBarButtonItem!
     private var decoBtn: UIBarButtonItem!
+    private var uploading = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +60,9 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     }
     
     @IBAction func fermer() {
-        dismissViewControllerAnimated(true, completion: nil)
+        if !uploading {
+            dismissViewControllerAnimated(true, completion: nil)
+        }
     }
     
     func connexion() {
@@ -85,7 +89,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         }
         if bug {
             let alert = UIAlertController(title: "Doucement",
-                                          message: "Veuillez attendre 5 minutes, vous avez réalisé trop de tentatives à la suite.", preferredStyle: .Alert)
+                                          message: "Veuillez attendre 5 minutes, tu as réalisé trop de tentatives à la suite.", preferredStyle: .Alert)
             alert.addAction(UIAlertAction(title:"Mince !", style: .Cancel, handler:nil))
             presentViewController(alert, animated:true, completion:nil)
             return;
@@ -121,6 +125,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         let hash = (login! + (passFinal as String) + "selfRetain_$_0x128D4_objc").sha256()
         let body: [String: String] = ["username": login!, "password": passFinal as String, "hash": hash]
         Data.JSONRequest(Data.sharedData.phpURLs["connect"]!, on: self, post: body) { (JSON) in
+            self.uploading = false
             var connecté = false
             if let json = JSON {
                 let alert = UIAlertController(title: "Erreur inconnue",
@@ -130,11 +135,33 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
                     if status == 1 {
                         if let data = json["data"] as? [String: AnyObject],
                             username = data["username"] as? String,
-                            info = data["info"] as? String {
+                            info = data["info"] as? String,
+                            img = data["img"] as? String {
                             let nom = username.componentsSeparatedByString(" ")[0]
                             var title = "Bienvenue \(nom) !"
                             if info.containsString("existe") {
                                 title = "Hey, de retour, \(nom) !"
+                            }
+                            
+                            if img != "" {
+                                self.uploading = true
+                                SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: img), options: [],
+                                                                                       progress: nil, completed: { (image, error, cacheType, finished, url) in
+                                                                                        self.uploading = false
+                                                                                        if image != nil {
+                                                                                            let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+                                                                                            let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
+                                                                                            
+                                                                                            let pic = image.scaleAndCrop(CGSizeMake(self.imgSize, self.imgSize), retina: false, fit: false, opaque: true)
+                                                                                            let imageData = UIImageJPEGRepresentation(pic, 1.0)
+                                                                                            imageData?.writeToFile(filePath, atomically: false)
+                                                                                            self.reloadEmpty()
+                                                                                        } else {
+                                                                                            let alert = UIAlertController(title: "Oups…",
+                                                                                                message: "Impossible de récupérer la photo de profil", preferredStyle: .ActionSheet)
+                                                                                            self.presentViewController(alert, animated: true, completion: nil)
+                                                                                        }
+                                })
                             }
                             
                             connecté = true
@@ -170,6 +197,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             self.connexionCell.userInteractionEnabled = true
             self.connexionCell.selectionStyle = .Default
         }
+        uploading = true
         spin.startAnimating()
     }
     
@@ -180,9 +208,9 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         alert.addAction(UIAlertAction(title: "Oui", style: .Default, handler: { (a) in
             
             let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-            let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
+            let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
             if NSData(contentsOfFile: filePath) != nil {
-                self.removePhoto()
+                self.removePhoto(false)
             }
             
             Data.deconnect()
@@ -198,7 +226,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     
     func choosePhoto() {
         let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
+        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
         if NSData(contentsOfFile: filePath) != nil {
             let alert = UIAlertController(title: "Changer l'image de profil", message: "", preferredStyle: .Alert)
             alert.addAction(UIAlertAction(title: "Supprimer la photo", style: .Destructive, handler: { (a) in
@@ -214,20 +242,26 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         }
     }
     
-    func removePhoto() {
+    func removePhoto(showAlert: Bool = true) {
+        removePhotoDisk(showAlert)
+        delPic(showAlert)
+        reloadEmpty()
+    }
+    
+    func removePhotoDisk(showAlert: Bool = true) {
         let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
+        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
         let fileManager = NSFileManager.defaultManager()
         do {
             try fileManager.removeItemAtPath(filePath)
         } catch let error as NSError {
-            let alert = UIAlertController(title: "Impossible de supprimer l'image",
-                                          message: error.localizedDescription, preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-            presentViewController(alert, animated: true, completion: nil)
+            if showAlert {
+                let alert = UIAlertController(title: "Impossible de supprimer l'image",
+                                              message: error.localizedDescription, preferredStyle: .Alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                presentViewController(alert, animated: true, completion: nil)
+            }
         }
-        
-        reloadEmpty()
     }
     
     func showPhotos() {
@@ -251,16 +285,150 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     }
     
     
+    // MARK: Upload
+    
+    func uploadPic() {
+        
+        if let login = KeychainSwift().get("login"),
+            passw = KeychainSwift().get("passw") {
+            let body = ["client": login,
+                        "password": passw,
+                        "hash": ("hmmmdaOUI42" + login + passw).sha256()]
+            
+            // Constantes
+            let boundaryConstant  = "----------V2y2HZDDDFg03epSStjsqdbaKO0j1"
+            let fileParamConstant = "file"
+            let requestUrl = NSURL(string: Data.sharedData.phpURLs["addPic"]!)
+            
+            // Requête
+            let request = NSMutableURLRequest(URL: requestUrl!)
+            request.cachePolicy = .ReloadIgnoringLocalCacheData
+            request.HTTPShouldHandleCookies = false
+            request.timeoutInterval = 30
+            request.HTTPMethod = "POST"
+            
+            // Début du formatage
+            let contentType = "multipart/form-data; boundary=" + boundaryConstant
+            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+            
+            // Ajout des paramètres POST normaux (client, pass, hash)
+            let httpBody = NSMutableData()
+            for param in body {
+                httpBody.appendData(("--" + boundaryConstant + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                httpBody.appendData(("Content-Disposition: form-data; name=\"" + param.0.URLencode() + "\"\r\n\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                httpBody.appendData((param.1.URLencode() + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+            }
+            
+            // Récupération de l'image JPEG stockée par l'app, en ≈ 150×150
+            let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+            let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
+            if let data = NSData(contentsOfFile: filePath) {
+                if let image = UIImage(data: data) {
+                    let pic = image.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
+                    if let imageData = UIImageJPEGRepresentation(pic, 1.0) {
+                        // Maintenant qu'on a l'image de type NSData, on la fout dans la requête
+                        httpBody.appendData(("--" + boundaryConstant + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                        httpBody.appendData(("Content-Disposition: form-data; name=\"" + fileParamConstant + "\"; filename=\"image.jpg\"\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                        httpBody.appendData("Content-Type: image/jpeg\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+                        httpBody.appendData(imageData)
+                        httpBody.appendData("\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+                        
+                        // On finit
+                        httpBody.appendData(("--" + boundaryConstant + "--\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                        request.HTTPBody = httpBody
+                        request.setValue(String(httpBody.length), forHTTPHeaderField: "Content-Length")
+                        
+                        // On envoie tout
+                        let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
+                                                          delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
+                        let dataTast = defaultSession.dataTaskWithRequest(request) { (data, resp, error) in
+                            self.spin.startAnimating()
+                            Data.sharedData.needsLoadingSpin(false)
+                            do {
+                                if let d = data {
+                                    let JSON = try NSJSONSerialization.JSONObjectWithData(d, options: [])
+                                    if let status = JSON["status"] as? Int,
+                                        cause = JSON["cause"] as? String {
+                                        if status != 1 {
+                                            self.removePhotoDisk(false)
+                                            let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
+                                                                          message: cause, preferredStyle: .Alert)
+                                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                                            self.presentViewController(alert, animated: true, completion: nil)
+                                        }
+                                    } else {
+                                        self.removePhotoDisk(false)
+                                        let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
+                                                                      message: "Impossible de lire la réponse du serveur", preferredStyle: .Alert)
+                                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                                        self.presentViewController(alert, animated: true, completion: nil)
+                                    }
+                                } else {
+                                    self.removePhotoDisk(false)
+                                    let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
+                                                                  message: "Impossible d'analyser la réponse du serveur", preferredStyle: .Alert)
+                                    alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                                    self.presentViewController(alert, animated: true, completion: nil)
+                                }
+                            } catch {
+                                self.removePhotoDisk(false)
+                                let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
+                                                              message: "Impossible de récupérer la réponse du serveur", preferredStyle: .Alert)
+                                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                                self.presentViewController(alert, animated: true, completion: nil)
+                            }
+                            self.uploading = false
+                        }
+                        uploading = true
+                        spin.startAnimating()
+                        Data.sharedData.needsLoadingSpin(true)
+                        dataTast.resume()
+                    }
+                }
+            }
+        }
+    }
+    
+    func delPic(showAlert: Bool = true) {
+        if let login = KeychainSwift().get("login"),
+            passw = KeychainSwift().get("passw") {
+            let body = ["client": login,
+                        "password": passw,
+                        "hash": ("tucroixcketuvoiBaseDonneeSinusvidal" + login + passw).sha256()]
+            Data.JSONRequest(Data.sharedData.phpURLs["delPic"]!, on: self, post: body) { (JSON) in
+                self.uploading = false
+                if let json = JSON {
+                    if let status = json.valueForKey("status") as? Int,
+                        cause = json.valueForKey("cause") as? String {
+                        if status != 1 && showAlert {
+                            let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: cause, preferredStyle: .Alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                            self.presentViewController(alert, animated: true, completion: nil)
+                        }
+                    } else if showAlert {
+                        let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: "Erreur serveur", preferredStyle: .Alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                        self.presentViewController(alert, animated: true, completion: nil)
+                    }
+                }
+            }
+            uploading = true
+        }
+    }
+    
+    
     // MARK: Image picker delegate
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         var image = info[UIImagePickerControllerOriginalImage] as! UIImage
         let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
+        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
         
         image = image.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
-        let imageData = UIImagePNGRepresentation(image)
+        let imageData = UIImageJPEGRepresentation(image, 1.0)
         imageData?.writeToFile(filePath, atomically: false)
+        
+        uploadPic()
         
         reloadEmpty()
         
@@ -360,7 +528,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
         let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.png")
+        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
         if let data = NSData(contentsOfFile: filePath) {
             return UIImage(data: data)
         }

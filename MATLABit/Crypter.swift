@@ -16,6 +16,15 @@ class Crypter: UITableViewController, UITextFieldDelegate {
     @IBOutlet var btnChiffrer: UIButton!
     @IBOutlet var btnDechiffrer: UIButton!
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        guard #available(iOS 9.1, *) else {
+            btnChiffrer.setTitle("Chiffrer", forState: .Normal)
+            btnDechiffrer.setTitle("Déchiffrer", forState: .Normal)
+            return
+        }
+    }
+    
     
     // MARK: - Table view data source
 

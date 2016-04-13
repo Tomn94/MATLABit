@@ -34,7 +34,7 @@ class GameVC : UIViewController {
     
     func error(notif: NSNotification) {
         if let info = notif.userInfo as? Dictionary<String, String> {
-            let alert = UIAlertController(title: "Erreur lors de l'envoi du score. Essayez de vous reconnecter", message: info["message"], preferredStyle: .Alert)
+            let alert = UIAlertController(title: "Erreur lors de l'envoi du score. Essaie de te reconnecter", message: info["message"], preferredStyle: .Alert)
             alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
             presentViewController(alert, animated: true, completion: nil)
         }
@@ -65,7 +65,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private let startLives = 3
     private let livesMax = 5
     private let difficultéMax = 3.5
+    private let scoreMaxDifficulté = 130
     private let bladeMaxTouchTime: NSTimeInterval = 2
+    private var harder = 1.0
     
     private var blade: SWBlade?
     private var bladeDelta = CGPointZero
@@ -91,8 +93,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var contactQueue = Array<SKPhysicsContact>()
 
     override func didMoveToView(view: SKView) {
-        backgroundColor = UIColor.blackColor()
+        if Data.sharedData.harder > 1.0 {
+            harder = Data.sharedData.harder
+        }
         
+        backgroundColor = UIColor.blackColor()
         let back = SKSpriteNode(imageNamed:"backFruit")
         back.zPosition = -1
         back.size = size
@@ -154,15 +159,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Spawn
-        let difficulté = Double(arc4random_uniform(UInt32(difficultéMax))) // TODO: Difficulté
-        let timeLimit = 0.35 + (Double(arc4random_uniform(100)) * (difficultéMax - difficulté))
+        var difficulté = Double(score) * difficultéMax / Double(scoreMaxDifficulté) * harder
+        if difficulté > difficultéMax {
+            difficulté = difficultéMax
+        }
+        let timeLimit = Double(arc4random_uniform(100)) * (0.35 + difficultéMax - difficulté)
         if currentTime - timeLastFruit > timeLimit {
             timeLastFruit = currentTime
             
             let randAppear = arc4random_uniform(200)
             if randAppear < 2 {
                 showBonus()
-            } else if randAppear < 10 * UInt32(difficulté) {
+            } else if randAppear < 10 {
+                showSpecialFruit()
+            } else if randAppear < 10 + UInt32(ceil(difficulté) * 2) {
                 showBomb()
             } else {
                 showFruit()
@@ -218,6 +228,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func showFruit() {
         addChild(Fruit(scene: self))
+    }
+    
+    func showSpecialFruit() {
+        addChild(SpecialFruit(theScene: self))
     }
     
     func showBomb() {
@@ -458,7 +472,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         explode(bonus.position, type: .Bonus)
                         bonus.runAction(SKAction.sequence([SKAction.fadeOutWithDuration(0.1), SKAction.removeFromParent()]))
                         
-                        updateScore(20)
+                        updateScore(10)
                         updateLives(1)
                     }
                 }
@@ -535,11 +549,14 @@ class Fruit: SKLabelNode {
 }
 
 class SpecialFruit: Fruit {
-    convenience init(scene: SKScene) {
-        self.init(scene: scene)
+    convenience init(theScene: SKScene) {
+        self.init(scene: theScene)
         
         userData = ["specialFruit": true]
-        let specials = ["🌶", "🍗", "🍕", "🍔", "🍟"]
+        var specials = ["🍗", "🍕", "🍔", "🍟"]
+        if #available(iOS 9.1, *) {
+            specials = ["🌮", "🌯", "🍗", "🍕", "🍔", "🍟"]
+        }
         text = specials[Int(arc4random_uniform(UInt32(specials.count)))]
     }
 }

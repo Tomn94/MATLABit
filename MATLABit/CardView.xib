@@ -11,11 +11,14 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="1Bu-BZ-uBU">
-                    <rect key="frame" x="0.0" y="0.0" width="600" height="556"/>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="1Bu-BZ-uBU">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="555"/>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="1000" text="Guy Plantier" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2vc-4q-beD">
-                    <rect key="frame" x="10" y="566" width="580" height="24"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Guy Plantier" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2vc-4q-beD">
+                    <rect key="frame" x="10" y="565" width="580" height="25"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="25" id="T3j-h5-KF2"/>
+                    </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -37,4 +40,7 @@
             </connections>
         </view>
     </objects>
+    <resources>
+        <image name="placeholder" width="44" height="44"/>
+    </resources>
 </document>
