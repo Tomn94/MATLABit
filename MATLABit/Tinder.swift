@@ -25,6 +25,7 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.emptyLabel.alpha = 0.0
         kolodaView.delegate = self
         kolodaView.dataSource = self
         
@@ -51,6 +52,36 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         }
     }
     
+	override func viewDidAppear(animated: Bool) {
+		super.viewDidAppear(animated)
+        
+        if Data.isConnected() {
+            if Data.hasNotifs() == 1 {
+                let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
+                UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+                UIApplication.sharedApplication().registerForRemoteNotifications()
+                NSUserDefaults.standardUserDefaults().setBool(true, forKey: "notifsAsked")
+            } else if Data.hasNotifs() == -1 {
+                let alert = UIAlertController(title: "Quelle tristesse",
+                                              message: "Tu as désactivé les notifications, nous ne pouvons pas recevoir tes matches !", preferredStyle: .Alert)
+//                alert.addAction(UIAlertAction(title: "Je pleure", style: .Destructive, handler: nil))
+                alert.addAction(UIAlertAction(title: "Corriger ça !", style: .Default, handler: { (a) in
+                    UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
+                }))
+            } else {
+                let alert = UIAlertController(title: "Sivouplé",
+                                              message: "Nous avons besoin des notifications pour recevoir tes matches\n\nTape juste sur Autoriser !", preferredStyle: .Alert)
+                alert.addAction(UIAlertAction(title: "Nan", style: .Destructive, handler: nil))
+                alert.addAction(UIAlertAction(title: "Autoriser", style: .Default, handler: { (a) in
+                    let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
+                    UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+                    UIApplication.sharedApplication().registerForRemoteNotifications()
+                    NSUserDefaults.standardUserDefaults().setBool(true, forKey: "notifsAsked")
+                }))
+            }
+        }
+	}
+    
     func fetchData() {
         if let login = KeychainSwift().get("login"),
             passw = KeychainSwift().get("passw") {
@@ -69,19 +100,22 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
                             self.tableView.layer.addAnimation(animation, forKey: nil)
                             
                             if self.matches.count > 0 {
-                            let oldPeople = people.filter({ (elementServ: [String: String]) -> Bool in
-                                self.matches.contains({ (elementApp: [String: String]) -> Bool in
-                                    elementApp["login"] == elementServ["login"]
+                                let oldPeople = people.filter({ (elementServ: [String: String]) -> Bool in
+                                    self.matches.contains({ (elementApp: [String: String]) -> Bool in
+                                        elementApp["login"] == elementServ["login"]
+                                    })
                                 })
-                            })
-                            let newPeople = people.filter({ (elementServ: [String: String]) -> Bool in
-                                !self.matches.contains({ (elementApp: [String: String]) -> Bool in
-                                    elementApp["login"] == elementServ["login"]
+                                let newPeople = people.filter({ (elementServ: [String: String]) -> Bool in
+                                    !self.matches.contains({ (elementApp: [String: String]) -> Bool in
+                                        elementApp["login"] == elementServ["login"]
+                                    })
                                 })
-                            })
-                            let total: Array<[String: String]> = oldPeople + newPeople
-                            self.matches = total
+                                let total: Array<[String: String]> = oldPeople + newPeople
+                                self.matches = total
                             } else {
+                                UIView.animateWithDuration(0.5) {
+                                    self.emptyLabel.alpha = 1.0
+                                }
                                 self.matches = people
                             }
                         } else {
@@ -117,7 +151,7 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > height) {
             return nil
         }
-        return UIImage(named: "ESEOasis")?.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
+        return Data.sharedData.logo2.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
     }
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {

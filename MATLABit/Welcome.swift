@@ -21,7 +21,10 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
     @IBOutlet var playBtn: UIBarButtonItem!
     private var animator: UIDynamicAnimator!
     
-    private var scores = Array<Array<(String, Int)>>()
+    private var iOSPic = UIImage(named: "ios")?.scaleAndCrop(CGSize(width: 15, height: 15)).imageWithRenderingMode(.AlwaysTemplate)
+    private var androidPic = UIImage(named: "android")?.scaleAndCrop(CGSize(width: 15, height: 15)).imageWithRenderingMode(.AlwaysTemplate)
+    
+    private var scores = Array<Array<(String, Int, String)>>()
     
     
     override func viewDidLoad() {
@@ -50,9 +53,11 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
                     data = json.valueForKey("data") as? [String: AnyObject],
                     scores = data["scores"] as? [AnyObject] {
                     if status == 1 {
-                        var newScores = Array<(String, Int)>()
+                        var newScores = Array<(String, Int, String)>()
                         for score in scores {
-                            let tuple = (score.valueForKey("login") as! String, score.valueForKey("score") as! Int)
+                            let tuple = (score.valueForKey("login") as! String,
+                                         score.valueForKey("score") as! Int,
+                                         score.valueForKey("os") as! String)
                             let name = score.valueForKey("login") as? String
                             if name == KeychainSwift().get("login") || name == KeychainSwift().get("uname") {
                                 Data.sharedData.bestScore = score.valueForKey("score") as? Int ?? 0
@@ -65,10 +70,10 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
                         self.tableView.layer.addAnimation(animation, forKey: nil)
                         Data.sharedData.scores = newScores
                     } else {
-                        Data.sharedData.scores = Array<(String, Int)>()
+                        Data.sharedData.scores = Array<(String, Int, String)>()
                     }
                 } else {
-                    Data.sharedData.scores = Array<(String, Int)>()
+                    Data.sharedData.scores = Array<(String, Int, String)>()
                 }
                 self.loadFetchedData()
             }
@@ -180,6 +185,14 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         cell.textLabel!.font = currentUser ? UIFont.boldSystemFontOfSize(cell.textLabel!.font.pointSize) : UIFont.systemFontOfSize(cell.textLabel!.font.pointSize)
         cell.detailTextLabel!.text = rang
         cell.detailTextLabel!.font = currentUser ? UIFont.boldSystemFontOfSize(cell.detailTextLabel!.font.pointSize) : UIFont.systemFontOfSize(cell.detailTextLabel!.font.pointSize)
+        cell.imageView?.tintColor = UIColor(white: 0.8, alpha: 1);
+        if data.2.lowercaseString == "ios" {
+            cell.imageView?.image = iOSPic
+        } else if data.2.lowercaseString == "android" {
+            cell.imageView?.image = androidPic
+        } else {
+            cell.imageView?.image = nil
+        }
         
         return cell
     }
@@ -192,7 +205,7 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > height) {
             return nil
         }
-        return UIImage(named: "ESEOasis")?.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
+        return Data.sharedData.logo2.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
     }
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {

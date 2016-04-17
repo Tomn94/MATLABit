@@ -134,9 +134,10 @@ class Crypter: UITableViewController, UITextFieldDelegate {
         var result = Array<UInt16>()
         
         for i in 0 ..< nbrChar {
-            var originalChar: UInt32 = 0
             let range = original.startIndex.advancedBy(i * 4) ..< original.startIndex.advancedBy((i * 4) + 4)
             let hexPart = original.substringWithRange(range)
+            
+            var originalChar: UInt32 = 0
             let scanner = NSScanner(string: hexPart)
             scanner.scanHexInt(&originalChar)
             

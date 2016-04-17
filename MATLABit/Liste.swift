@@ -91,7 +91,12 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         let cell = tableView.dequeueReusableCellWithIdentifier("listeCell", forIndexPath: indexPath)
 
         let data = Data.sharedData.team[indexPath.section][indexPath.row]
-        cell.textLabel?.text = data["name"] as? String
+        
+        var txt = data["name"] as! String
+        if let mutuel = data["mutual"] as? Bool where mutuel {
+            txt += " (💞 réciproque)"
+        }
+        cell.textLabel?.text = txt
         
         var sub = ""
         var verbe = "a"
@@ -172,7 +177,7 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > height) {
             return nil
         }
-        return UIImage(named: "ESEOasis")?.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
+        return Data.sharedData.logo2.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
     }
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {

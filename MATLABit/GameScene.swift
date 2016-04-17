@@ -7,8 +7,26 @@
 //
 
 import SpriteKit
+import AVFoundation
 
 class GameVC : UIViewController {
+    
+    private var audioPlayer: AVAudioPlayer? = AVAudioPlayer()
+    
+    convenience init() {
+        self.init(nibName:nil, bundle:nil)
+        
+        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+        let filePath = documentsPath.stringByAppendingPathComponent("son.mp3")
+        let url = NSURL(fileURLWithPath: filePath)
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOfURL: url)
+            audioPlayer!.numberOfLoops = -1
+            audioPlayer!.prepareToPlay()
+        } catch {
+            audioPlayer = nil
+        }
+    }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -21,6 +39,20 @@ class GameVC : UIViewController {
             
             NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(quit), name: "quitGame", object: nil)
             NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(error(_:)), name: "errorGame", object: nil)
+        }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        if let ap = audioPlayer {
+            ap.play()
+        }
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let ap = audioPlayer {
+            ap.stop()
         }
     }
     
@@ -163,7 +195,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if difficulté > difficultéMax {
             difficulté = difficultéMax
         }
-        let timeLimit = Double(arc4random_uniform(100)) * (0.35 + difficultéMax - difficulté)
+        let timeLimit = Double(arc4random_uniform(100)) * (0.3 + difficultéMax - difficulté)
         if currentTime - timeLastFruit > timeLimit {
             timeLastFruit = currentTime
             
@@ -350,6 +382,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let body = ["score": String(best),
                         "client": login,
                         "password": passw,
+                        "os": "iOS",
                         "hash": ("**** SCORES ****" + login + String(best) + passw).sha256()]
             
             Data.JSONRequest(Data.sharedData.phpURLs["sendScore"]!, post: body) { (JSON) in

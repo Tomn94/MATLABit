@@ -12,7 +12,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    
+    private var notifAfterLaunch: NSDictionary?
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         let appearance = UINavigationBar.appearance()
@@ -22,6 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.tintColor = UIColor(red: 1, green: 0.5, blue: 0, alpha: 1)
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(launchFinished), name: "launchFinished", object: nil)
+        
+        if let notif = launchOptions?[UIApplicationLaunchOptionsRemoteNotificationKey] as? NSDictionary,
+            _ = notif["aps"] as? NSDictionary {
+            notifAfterLaunch = notif
+        }
         
         return true
     }
@@ -33,6 +38,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   options: [.TransitionFlipFromLeft, .AllowAnimatedContent, .LayoutSubviews]) { (finished) in
             if finished {
                 self.window!.rootViewController = vc
+                if let notif = self.notifAfterLaunch {
+                    NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: #selector(self.handleNotif(_:)), userInfo: notif, repeats: false)
+                    self.notifAfterLaunch = nil
+                }
             }
         }
     }
@@ -57,6 +66,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    
+    // MARK: Notifications
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        if Data.isConnected() {
+            var push = String(data: deviceToken, encoding: NSUTF8StringEncoding)!
+            push = push.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: " <>"))
+            if let login = KeychainSwift().get("login"),
+                passw = KeychainSwift().get("passw") {
+                let body = ["client": login,
+                            "password": passw,
+                            "os": "IOS",
+                            "token": push,
+                            "hash": ("Erreur mémoire cache" + login + passw + "IOS" + push).sha256()]
+                Data.sharedData.needsLoadingSpin(true)
+                Data.JSONRequest(Data.sharedData.phpURLs["newPush"]!, on: nil, post: body) { (JSON) in
+                    Data.sharedData.needsLoadingSpin(false)
+                    NSUserDefaults.standardUserDefaults().setValue(push, forKey: "pushToken")
+                }
+            }
+        }
+    }
+    
+    func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+    }
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: #selector(handleNotif(_:)), userInfo: userInfo, repeats: false)
+    }
+    
+    func handleNotif(userInfo: NSDictionary) {
+        if let data = userInfo["data"] as? [String: AnyObject] {
+            let sb = UIStoryboard(name:"Match", bundle:nil)
+            let vc = sb.instantiateInitialViewController() as! Match
+            vc.setVisualData(data["img"] as? String, name: data["name"] as? String)
+            
+            self.window?.rootViewController!.presentViewController(vc, animated: true, completion: nil)
+        }
     }
 }
 

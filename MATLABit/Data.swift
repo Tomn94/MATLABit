@@ -16,13 +16,15 @@ class Data {
     var connectionsAttempts = 0
     
     var logo = UIImage(named: "ESEOasis")!
+    var logo2 = UIImage(named: "ESEOasis")!
     var fbURL = NSURL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
     var harder = 1.0
     var bestScore = 0
     var phpURLs = [String: String]()
     
-    var scores = Array<(String, Int)>()
+    var scores = Array<(String, Int, String)>()
     var team = [Array<[String: AnyObject]>(), Array<[String: AnyObject]>()]
+    var best = Array<[String: AnyObject]>()
     
     private var pendingConnections = 0
     
@@ -47,6 +49,23 @@ class Data {
         return NSData(contentsOfFile: filePath) != nil
     }
     
+    class func hasMP3(newURL: String) -> Bool {
+        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+        let filePath = documentsPath.stringByAppendingPathComponent("son.mp3")
+        return NSData(contentsOfFile: filePath) != nil && NSUserDefaults.standardUserDefaults().stringForKey("mp3URL") != nil && NSUserDefaults.standardUserDefaults().stringForKey("mp3URL") == newURL
+    }
+    
+    class func hasNotifs() -> Int {
+        if NSUserDefaults.standardUserDefaults().boolForKey("notifsAsked") {
+            if UIApplication.sharedApplication().isRegisteredForRemoteNotifications() {
+                return 1
+            } else {
+                return -1
+            }
+        }
+        return 0;
+    }
+    
     class func connect(login: String, pass: String, username: String) {
         let keychain = KeychainSwift()
         keychain.set(login, forKey: "login")
@@ -55,6 +74,21 @@ class Data {
     }
     
     class func deconnect()  {
+        if let login = KeychainSwift().get("login"),
+            passw = KeychainSwift().get("passw"),
+            push = NSUserDefaults.standardUserDefaults().stringForKey("pushToken") {
+            let body = ["client": login,
+                        "password": passw,
+                        "os": "IOS",
+                        "token": push,
+                        "hash": ("Bonjour %s !" + login + passw + "IOS" + push).sha256()]
+            Data.sharedData.needsLoadingSpin(true)
+            Data.JSONRequest(Data.sharedData.phpURLs["newPush"]!, on: nil, post: body) { (JSON) in
+                Data.sharedData.needsLoadingSpin(false)
+                NSUserDefaults.standardUserDefaults().removeObjectForKey("pushToken")
+            }
+        }
+        
         KeychainSwift().clear()
     }
     
