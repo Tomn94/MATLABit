@@ -195,7 +195,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if difficulté > difficultéMax {
             difficulté = difficultéMax
         }
-        let timeLimit = Double(arc4random_uniform(100)) * (0.3 + difficultéMax - difficulté)
+        let timeLimit = (Double(arc4random_uniform(100)) + 0.1) * (0.2 + difficultéMax - difficulté)
         if currentTime - timeLastFruit > timeLimit {
             timeLastFruit = currentTime
             
@@ -231,7 +231,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         scoreHUD.text = String(score)
-        if score == best {
+        if score >= best {
             bestHUD.runAction(SKAction.fadeOutWithDuration(0.5))
         } else if score < best {
             bestHUD.text = "MAX: " + String(best)

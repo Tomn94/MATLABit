@@ -25,6 +25,7 @@
 		6429B1C01CB84D1900C00BCF /* UIImage+Fit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6429B1BC1CB84D1900C00BCF /* UIImage+Fit.m */; };
 		6429B1C11CB84D1900C00BCF /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 6429B1BE1CB84D1900C00BCF /* UIImage+ImageEffects.m */; };
 		6429B1C41CB85B3B00C00BCF /* Welcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6429B1C31CB85B3B00C00BCF /* Welcome.swift */; };
+		642F8F691CC5806A00483D4A /* ScoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642F8F681CC5806A00483D4A /* ScoreCell.swift */; };
 		6433EC411CB69D7B00784EE5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC3F1CB69D7B00784EE5 /* Main.storyboard */; };
 		6433EC431CB69D7B00784EE5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC421CB69D7B00784EE5 /* Assets.xcassets */; };
 		6433EC461CB69D7B00784EE5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6433EC441CB69D7B00784EE5 /* LaunchScreen.storyboard */; };
@@ -91,6 +92,7 @@
 		6429B1BD1CB84D1900C00BCF /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		6429B1BE1CB84D1900C00BCF /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		6429B1C31CB85B3B00C00BCF /* Welcome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Welcome.swift; sourceTree = "<group>"; };
+		642F8F681CC5806A00483D4A /* ScoreCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreCell.swift; sourceTree = "<group>"; };
 		6433EC301CB69D7B00784EE5 /* MATLABit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MATLABit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6433EC401CB69D7B00784EE5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6433EC421CB69D7B00784EE5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -309,6 +311,7 @@
 			isa = PBXGroup;
 			children = (
 				6429B1C31CB85B3B00C00BCF /* Welcome.swift */,
+				642F8F681CC5806A00483D4A /* ScoreCell.swift */,
 				64D0B3721CBC43D100E4F6BF /* Tinder */,
 				6429B1351CB71F6D00C00BCF /* Crypter.swift */,
 			);
@@ -541,6 +544,7 @@
 				64FB1E9D1CC2EB1B001A3C95 /* Best.swift in Sources */,
 				6429B1BF1CB84D1900C00BCF /* JAQBlurryTableViewController.m in Sources */,
 				6429B1301CB713A500C00BCF /* DraggableCardView.swift in Sources */,
+				642F8F691CC5806A00483D4A /* ScoreCell.swift in Sources */,
 				6473C7261CBD4C740066D993 /* CardOverlay.swift in Sources */,
 				6429B12C1CB7106300C00BCF /* KolodaCardStorage.swift in Sources */,
 				647936F91CBB425F00B246CD /* Tab.swift in Sources */,
@@ -640,6 +644,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -662,6 +667,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -685,6 +691,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -700,6 +707,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

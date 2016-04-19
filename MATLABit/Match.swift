@@ -16,10 +16,10 @@ class Match: UIViewController {
     private var nom = "Il/elle"
     private var img = ""
     
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
         
-        descLabel.text = nom + " te veut dans son cul"
+        descLabel.text = nom + " te veut dans sa liste BDE"
         if img != "" {
             imageView.sd_setImageWithURL(NSURL(string: img), placeholderImage: UIImage(named: "placeholder"))
         }

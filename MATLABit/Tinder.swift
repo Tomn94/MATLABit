@@ -19,13 +19,14 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     @IBOutlet var noBtn: UIImageView!
     @IBOutlet var yesBtn: UIImageView!
     @IBOutlet var listeBtn: UIBarButtonItem!
+    @IBOutlet var bestBtn: UIBarButtonItem!
     @IBOutlet var emptyLabel: UILabel!
     var matches = Array<[String : String]>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.emptyLabel.alpha = 0.0
+        emptyLabel.alpha = 0.0
         kolodaView.delegate = self
         kolodaView.dataSource = self
         
@@ -43,7 +44,7 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         
         let hasAccess = Data.isConnected() && Data.hasProfilePic()
         tableView.hidden = hasAccess
-        navigationItem.rightBarButtonItem = hasAccess ? listeBtn : nil
+        navigationItem.rightBarButtonItems = hasAccess ? [listeBtn, bestBtn] : nil
         
         if !hasAccess {
             tableView.reloadEmptyDataSet()
@@ -68,6 +69,7 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
                 alert.addAction(UIAlertAction(title: "Corriger ça !", style: .Default, handler: { (a) in
                     UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
                 }))
+                presentViewController(alert, animated: true, completion: nil)
             } else {
                 let alert = UIAlertController(title: "Sivouplé",
                                               message: "Nous avons besoin des notifications pour recevoir tes matches\n\nTape juste sur Autoriser !", preferredStyle: .Alert)
@@ -78,9 +80,13 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
                     UIApplication.sharedApplication().registerForRemoteNotifications()
                     NSUserDefaults.standardUserDefaults().setBool(true, forKey: "notifsAsked")
                 }))
+                presentViewController(alert, animated: true, completion: nil)
             }
         }
 	}
+    
+    
+    // MARK: Actions
     
     func fetchData() {
         if let login = KeychainSwift().get("login"),
@@ -88,8 +94,9 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
             let body = ["client": login,
                         "password": passw,
                         "hash": ("Discipliné666" + login + passw).sha256()]
-            Data.JSONRequest(Data.sharedData.phpURLs["getMatches"]!, on: self, post: body) { (JSON) in
+            Data.JSONRequest(Data.sharedData.phpURLs["getMatches"]!, on: nil, post: body) { (JSON) in
                 if let json = JSON {
+                    let oldData = self.matches
                     if let status = json.valueForKey("status") as? Int,
                         data = json.valueForKey("data") as? [String: AnyObject],
                         people = data["people"] as? Array<[String: String]> {
@@ -99,7 +106,7 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
                             animation.type = kCATransitionFade
                             self.tableView.layer.addAnimation(animation, forKey: nil)
                             
-                            if self.matches.count > 0 {
+                            if !self.matches.isEmpty {
                                 let oldPeople = people.filter({ (elementServ: [String: String]) -> Bool in
                                     self.matches.contains({ (elementApp: [String: String]) -> Bool in
                                         elementApp["login"] == elementServ["login"]
@@ -124,14 +131,28 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
                     } else {
                         self.matches = Array<[String: String]>()
                     }
-                    self.loadFetchedData()
+                    self.loadFetchedData(oldData)
                 }
             }
         }
     }
     
-    func loadFetchedData() {
-        kolodaView.reloadData()
+    func loadFetchedData(before: Array<[String : String]>) {
+        var recharger = true
+        
+        if matches.count == before.count {
+            recharger = false
+            for match in matches {
+                if !before.contains({ $0 == match }) {
+                    recharger = true
+                    break
+                }
+            }
+        }
+        
+        if recharger {
+            kolodaView.reloadData()
+        }
     }
     
     
@@ -201,7 +222,7 @@ extension Tinder: KolodaViewDelegate {
                             "password": passw,
                             "coeur": coeur,
                             "hash": ("AdolfUnChien.com" + login + coeur + passw).sha256()]
-                Data.JSONRequest(Data.sharedData.phpURLs["sendMatch"]!, on: self, post: body) { (JSON) in
+                Data.JSONRequest(Data.sharedData.phpURLs["sendMatch"]!, on: nil, post: body) { (JSON) in
                     if let json = JSON {
                         if let status = json.valueForKey("status") as? Int,
                             cause = json.valueForKey("cause") as? String {
@@ -266,14 +287,16 @@ extension Tinder: KolodaViewDataSource {
         card.layer.cornerRadius = 10
         card.layer.masksToBounds = true
         
-        let match = matches[Int(index)]
-        card.label.text = match["name"]
-        SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: match["img"]!), options: [],
-                                                               progress: nil, completed: { (image, error, cacheType, finished, url) in
-                                                                if image != nil {
-                                                                    card.image.image = image
-                                                                }
-        })
+        if matches.count > Int(index) {
+            let match = matches[Int(index)]
+            card.label.text = match["name"]
+            SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: match["img"]!), options: [],
+                                                                   progress: nil, completed: { (image, error, cacheType, finished, url) in
+                                                                    if image != nil {
+                                                                        card.image.image = image
+                                                                    }
+            })
+        }
         
         return card
     }

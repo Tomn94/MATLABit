@@ -29,7 +29,7 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
             let body = ["client": login,
                         "password": passw,
                         "hash": ("TheSubsLongestNight" + login + passw).sha256()]
-            Data.JSONRequest(Data.sharedData.phpURLs["getBest"]!, on: self, post: body) { (JSON) in
+            Data.JSONRequest(Data.sharedData.phpURLs["getBest"]!, on: nil, post: body) { (JSON) in
                 if let json = JSON {
                     if let status = json.valueForKey("status") as? Int,
                         data = json.valueForKey("data") as? [String: AnyObject],
@@ -53,7 +53,7 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
     }
     
     func loadFetchedData() {
-        let hasData = Data.sharedData.best.count > 0
+        let hasData = !Data.sharedData.best.isEmpty
         tableView.backgroundColor = hasData ? UIColor.whiteColor() : UIColor.groupTableViewBackgroundColor()
         tableView.tableFooterView = hasData ? nil : UIView()
         
@@ -64,7 +64,7 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
     // MARK: - Table view data source
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return Data.sharedData.best.count > 0 ? 1 : 0
+        return Data.sharedData.best.isEmpty ? 0 : 1
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -77,7 +77,7 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
         let data = Data.sharedData.best[indexPath.row]
         cell.textLabel?.text = data["name"] as? String
         
-        var sub = "Dans "
+        var sub = "dans "
         if let nbr = data["nbr"] as? Int {
             sub += String(nbr) + " liste"
             

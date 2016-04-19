@@ -21,6 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         appearance.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
         window?.tintColor = UIColor(red: 1, green: 0.5, blue: 0, alpha: 1)
         
+        if !NSUserDefaults.standardUserDefaults().boolForKey("alreadyBeenLaunched") {
+            KeychainSwift().clear()
+            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "alreadyBeenLaunched")
+        }
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(launchFinished), name: "launchFinished", object: nil)
         
         if let notif = launchOptions?[UIApplicationLaunchOptionsRemoteNotificationKey] as? NSDictionary,
@@ -73,8 +78,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
         if Data.isConnected() {
-            var push = String(data: deviceToken, encoding: NSUTF8StringEncoding)!
-            push = push.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: " <>"))
+            let tokenChars = UnsafePointer<CChar>(deviceToken.bytes)
+            var push = ""
+            for i in 0..<deviceToken.length {
+                push += String(format: "%02.2hhx", arguments: [tokenChars[i]])
+            }
+            
             if let login = KeychainSwift().get("login"),
                 passw = KeychainSwift().get("passw") {
                 let body = ["client": login,
@@ -98,13 +107,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: #selector(handleNotif(_:)), userInfo: userInfo, repeats: false)
     }
     
-    func handleNotif(userInfo: NSDictionary) {
-        if let data = userInfo["data"] as? [String: AnyObject] {
-            let sb = UIStoryboard(name:"Match", bundle:nil)
-            let vc = sb.instantiateInitialViewController() as! Match
-            vc.setVisualData(data["img"] as? String, name: data["name"] as? String)
-            
-            self.window?.rootViewController!.presentViewController(vc, animated: true, completion: nil)
+    func handleNotif(timer: NSTimer) {
+        let userInfo = timer.userInfo!
+        if let action = userInfo["action"] as? Int {
+            if action == 1 {
+                if let matchData = userInfo["matchData"] as? [String: AnyObject] {
+                    let sb = UIStoryboard(name:"Match", bundle:nil)
+                    let vc = sb.instantiateInitialViewController() as! Match
+                    vc.modalPresentationStyle = .OverFullScreen
+                    vc.setVisualData(matchData["img"] as? String, name: matchData["name"] as? String)
+                    
+                    window?.rootViewController!.presentViewController(vc, animated: true, completion: nil)
+                }
+            } else if let msg = userInfo["aps"]!!["alert"] as? String {
+                var titre = "Notification"
+                var message = msg
+                var array = msg.componentsSeparatedByString("\n")
+                if array.count > 1 {
+                    titre = array[0]
+                    array.removeAtIndex(0)
+                    message = array.joinWithSeparator("\n")
+                }
+                let alert = UIAlertController(title: titre, message: message, preferredStyle: .Alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
+                window?.rootViewController!.presentViewController(alert, animated: true, completion: nil)
+            }
         }
     }
 }

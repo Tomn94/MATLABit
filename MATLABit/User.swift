@@ -128,7 +128,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         // Envoi
         let hash = (login! + (passFinal as String) + "selfRetain_$_0x128D4_objc").sha256()
         let body: [String: String] = ["username": login!, "password": passFinal as String, "hash": hash]
-        Data.JSONRequest(Data.sharedData.phpURLs["connect"]!, on: self, post: body) { (JSON) in
+        Data.JSONRequest(Data.sharedData.phpURLs["connect"]!, on: nil, post: body) { (JSON) in
             self.uploading = false
             var connecté = false
             if let json = JSON {
@@ -398,7 +398,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             let body = ["client": login,
                         "password": passw,
                         "hash": ("tucroixcketuvoiBaseDonneeSinusvidal" + login + passw).sha256()]
-            Data.JSONRequest(Data.sharedData.phpURLs["delPic"]!, on: self, post: body) { (JSON) in
+            Data.JSONRequest(Data.sharedData.phpURLs["delPic"]!, on: nil, post: body) { (JSON) in
                 self.uploading = false
                 if let json = JSON {
                     if let status = json.valueForKey("status") as? Int,

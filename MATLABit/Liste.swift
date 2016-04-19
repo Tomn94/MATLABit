@@ -11,6 +11,7 @@ import UIKit
 class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
     var emptyDataSetView: DZNEmptyDataSetView!
+    private let reci = "  💞 réciproque"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +30,7 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
             let body = ["client": login,
                         "password": passw,
                         "hash": ("JavaleduSwift,Taylor" + login + passw).sha256()]
-            Data.JSONRequest(Data.sharedData.phpURLs["getList"]!, on: self, post: body) { (JSON) in
+            Data.JSONRequest(Data.sharedData.phpURLs["getList"]!, on: nil, post: body) { (JSON) in
                 if let json = JSON {
                     if let status = json.valueForKey("status") as? Int,
                         data = json.valueForKey("data") as? [String: AnyObject],
@@ -54,7 +55,7 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
     }
     
     func loadFetchedData() {
-        let hasData = Data.sharedData.team[0].count > 0 && Data.sharedData.team[1].count > 0
+        let hasData = !Data.sharedData.team[0].isEmpty && !Data.sharedData.team[1].isEmpty
         tableView.backgroundColor = hasData ? UIColor.whiteColor() : UIColor.groupTableViewBackgroundColor()
         tableView.tableFooterView = hasData ? nil : UIView()
         
@@ -78,7 +79,7 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         } else if section == 1 {
             if Data.sharedData.team[1].count > 1 {
                 return "Tu as une touche ! Ils te veulent :"
-            } else if Data.sharedData.team[1].count > 0 {
+            } else if !Data.sharedData.team[1].isEmpty {
                 return "Tu as une touche ! Il/elle te veut :"
             } else {
                 return "Tu n'as aucune touche"
@@ -93,10 +94,15 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         let data = Data.sharedData.team[indexPath.section][indexPath.row]
         
         var txt = data["name"] as! String
-        if let mutuel = data["mutual"] as? Bool where mutuel {
-            txt += " (💞 réciproque)"
-        }
         cell.textLabel?.text = txt
+        if let mutuel = data["mutual"] as? Bool where mutuel {
+            txt += reci
+            let at = NSMutableAttributedString(string: txt)
+            let len = reci.characters.count
+            at.setAttributes([NSFontAttributeName: UIFont.systemFontOfSize(13), NSForegroundColorAttributeName: UIColor(white: 0.7, alpha: 1)],
+                             range: NSMakeRange(txt.characters.count - len, len + 1))
+            cell.textLabel?.attributedText = at
+        }
         
         var sub = ""
         var verbe = "a"

@@ -22,7 +22,7 @@ class Data {
     var bestScore = 0
     var phpURLs = [String: String]()
     
-    var scores = Array<(String, Int, String)>()
+    var scores = Array<(String, Int, String, Int)>()
     var team = [Array<[String: AnyObject]>(), Array<[String: AnyObject]>()]
     var best = Array<[String: AnyObject]>()
     
@@ -83,7 +83,7 @@ class Data {
                         "token": push,
                         "hash": ("Bonjour %s !" + login + passw + "IOS" + push).sha256()]
             Data.sharedData.needsLoadingSpin(true)
-            Data.JSONRequest(Data.sharedData.phpURLs["newPush"]!, on: nil, post: body) { (JSON) in
+            Data.JSONRequest(Data.sharedData.phpURLs["delPush"]!, on: nil, post: body) { (JSON) in
                 Data.sharedData.needsLoadingSpin(false)
                 NSUserDefaults.standardUserDefaults().removeObjectForKey("pushToken")
             }
