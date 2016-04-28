@@ -14,7 +14,7 @@
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="1Bu-BZ-uBU">
                     <rect key="frame" x="0.0" y="0.0" width="600" height="555"/>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Guy Plantier" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2vc-4q-beD">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Nom inconnu" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2vc-4q-beD">
                     <rect key="frame" x="10" y="565" width="580" height="25"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="25" id="T3j-h5-KF2"/>
