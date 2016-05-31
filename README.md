@@ -50,6 +50,6 @@ First app in Swift including a Fruit Ninja, a Tinder and many funny useless feat
 
 Requires a SheepDevs Server API.
 
-## Versions
+## Release notes
 ###v1.0 · 24/04/2016
 > *Original publication*
