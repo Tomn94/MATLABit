@@ -35,9 +35,9 @@ class CardOverlay: OverlayView {
     override var overlayState:OverlayMode  {
         didSet {
             switch overlayState {
-            case .Left :
+            case .left :
                 overlayImageView.image = UIImage(named: "noOverlay")
-            case .Right :
+            case .right :
                 overlayImageView.image = UIImage(named: "yesOverlay")
             default:
                 overlayImageView.image = nil

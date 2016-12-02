@@ -44,7 +44,7 @@ class SWBlade: SKNode {
     self.name = "skblade"
     self.position = position
         
-    let tip:SKSpriteNode = SKSpriteNode(color: color, size: CGSizeMake(25, 25))
+    let tip:SKSpriteNode = SKSpriteNode(color: color, size: CGSize(width: 25, height: 25))
 //    tip.zRotation = 0.785398163
     tip.zPosition = 10
     tip.texture = SKTexture(imageNamed: "spark.png")
@@ -58,15 +58,15 @@ class SWBlade: SKNode {
     self.setScale(0.6)
   }
     
-  func enablePhysics(categoryBitMask:UInt32, contactTestBitmask:UInt32, collisionBitmask:UInt32) {
+  func enablePhysics(_ categoryBitMask:UInt32, contactTestBitmask:UInt32, collisionBitmask:UInt32) {
     self.physicsBody = SKPhysicsBody(circleOfRadius: 16)
     self.physicsBody?.categoryBitMask = categoryBitMask
     self.physicsBody?.contactTestBitMask = contactTestBitmask
     self.physicsBody?.collisionBitMask = collisionBitmask
-    self.physicsBody?.dynamic = false
+    self.physicsBody?.isDynamic = false
   }
     
-  func emitterNodeWithColor(color:UIColor)->SKEmitterNode {
+  func emitterNodeWithColor(_ color:UIColor)->SKEmitterNode {
     let emitterNode:SKEmitterNode = SKEmitterNode(fileNamed: "Blade.sks")!/*
     emitterNode.particleTexture = SKTexture(imageNamed: "spark.png")
     emitterNode.particleBirthRate = 3000

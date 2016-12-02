@@ -44,19 +44,19 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         kolodaView.dataSource = self
         
         tableView.tableFooterView = UIView()
-        tableView.backgroundColor = UIColor.groupTableViewBackgroundColor()
+        tableView.backgroundColor = UIColor.groupTableViewBackground
         
         yesBtn.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(swipeYes)))
         noBtn.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(swipeNo)))
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(viewWillAppear(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewWillAppear(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         let hasAccess = Data.isConnected() && Data.hasProfilePic()
-        tableView.hidden = hasAccess
+        tableView.isHidden = hasAccess
         navigationItem.rightBarButtonItems = hasAccess ? [listeBtn, bestBtn] : nil
         
         if !hasAccess {
@@ -66,34 +66,34 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         }
     }
     
-	override func viewDidAppear(animated: Bool) {
+	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
         
         if Data.isConnected() {
             if Data.hasNotifs() == 1 {
-                let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
-                UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-                UIApplication.sharedApplication().registerForRemoteNotifications()
-                NSUserDefaults.standardUserDefaults().setBool(true, forKey: "notifsAsked")
+                let settings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+                UIApplication.shared.registerUserNotificationSettings(settings)
+                UIApplication.shared.registerForRemoteNotifications()
+                UserDefaults.standard.set(true, forKey: "notifsAsked")
             } else if Data.hasNotifs() == -1 {
                 let alert = UIAlertController(title: "Quelle tristesse",
-                                              message: "Tu as désactivé les notifications, nous ne pouvons pas recevoir tes matches !", preferredStyle: .Alert)
+                                              message: "Tu as désactivé les notifications, nous ne pouvons pas recevoir tes matches !", preferredStyle: .alert)
 //                alert.addAction(UIAlertAction(title: "Je pleure", style: .Destructive, handler: nil))
-                alert.addAction(UIAlertAction(title: "Corriger ça !", style: .Default, handler: { (a) in
-                    UIApplication.sharedApplication().openURL(NSURL(string: UIApplicationOpenSettingsURLString)!)
+                alert.addAction(UIAlertAction(title: "Corriger ça !", style: .default, handler: { (a) in
+                    UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
                 }))
-                presentViewController(alert, animated: true, completion: nil)
+                present(alert, animated: true, completion: nil)
             } else {
                 let alert = UIAlertController(title: "Sivouplé",
-                                              message: "Nous avons besoin des notifications pour recevoir tes matches\n\nTape juste sur Autoriser !", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "Nan", style: .Destructive, handler: nil))
-                alert.addAction(UIAlertAction(title: "Autoriser", style: .Default, handler: { (a) in
-                    let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
-                    UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-                    UIApplication.sharedApplication().registerForRemoteNotifications()
-                    NSUserDefaults.standardUserDefaults().setBool(true, forKey: "notifsAsked")
+                                              message: "Nous avons besoin des notifications pour recevoir tes matches\n\nTape juste sur Autoriser !", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Nan", style: .destructive, handler: nil))
+                alert.addAction(UIAlertAction(title: "Autoriser", style: .default, handler: { (a) in
+                    let settings = UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+                    UIApplication.shared.registerUserNotificationSettings(settings)
+                    UIApplication.shared.registerForRemoteNotifications()
+                    UserDefaults.standard.set(true, forKey: "notifsAsked")
                 }))
-                presentViewController(alert, animated: true, completion: nil)
+                present(alert, animated: true, completion: nil)
             }
         }
 	}
@@ -103,39 +103,39 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     func fetchData() {
         if let login = KeychainSwift().get("login"),
-            passw = KeychainSwift().get("passw") {
-            let body = ["client": login,
-                        "password": passw,
-                        "hash": ("Discipliné666" + login + passw).sha256()]
+           let passw = KeychainSwift().get("passw") {
+           let body = ["client": login,
+                       "password": passw,
+                       "hash": ("Discipliné666" + login + passw).sha256()]
             Data.JSONRequest(Data.sharedData.phpURLs["getMatches"]!, on: nil, post: body) { (JSON) in
                 if let json = JSON {
                     let oldData = self.matches
-                    if let status = json.valueForKey("status") as? Int,
-                        data = json.valueForKey("data") as? [String: AnyObject],
-                        people = data["people"] as? Array<[String: String]> {
+                    if let status = json["status"] as? Int,
+                       let data = json["data"] as? [String: AnyObject],
+                       let people = data["people"] as? Array<[String: String]> {
                         if status == 1 {
                             let animation = CATransition()
                             animation.duration = 0.25
                             animation.type = kCATransitionFade
-                            self.tableView.layer.addAnimation(animation, forKey: nil)
+                            self.tableView.layer.add(animation, forKey: nil)
                             
                             if !self.matches.isEmpty {
                                 let oldPeople = people.filter({ (elementServ: [String: String]) -> Bool in
-                                    self.matches.contains({ (elementApp: [String: String]) -> Bool in
+                                    self.matches.contains(where: { (elementApp: [String: String]) -> Bool in
                                         elementApp["login"] == elementServ["login"]
                                     })
                                 })
                                 let newPeople = people.filter({ (elementServ: [String: String]) -> Bool in
-                                    !self.matches.contains({ (elementApp: [String: String]) -> Bool in
+                                    !self.matches.contains(where: { (elementApp: [String: String]) -> Bool in
                                         elementApp["login"] == elementServ["login"]
                                     })
                                 })
                                 let total: Array<[String: String]> = oldPeople + newPeople
                                 self.matches = total
                             } else {
-                                UIView.animateWithDuration(0.5) {
+                                UIView.animate(withDuration: 0.5, animations: {
                                     self.emptyLabel.alpha = 1.0
-                                }
+                                }) 
                                 self.matches = people
                             }
                         } else {
@@ -150,13 +150,13 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         }
     }
     
-    func loadFetchedData(before: Array<[String : String]>) {
+    func loadFetchedData(_ before: Array<[String : String]>) {
         var recharger = true
         
         if matches.count == before.count {
             recharger = false
             for match in matches {
-                if !before.contains({ $0 == match }) {
+                if !before.contains(where: { $0 == match }) {
                     recharger = true
                     break
                 }
@@ -170,27 +170,27 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     
     func swipeYes() {
-        kolodaView.swipe(.Right)
+        kolodaView.swipe(.right)
     }
     
     func swipeNo() {
-        kolodaView.swipe(.Left)
+        kolodaView.swipe(.left)
     }
     
     
     // MARK: - DZNEmptyDataSet
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        let height = UIScreen.mainScreen().bounds.size.height
-        if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > height) {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        let height = UIScreen.main.bounds.size.height
+        if UI_USER_INTERFACE_IDIOM() != .pad && (UIDeviceOrientationIsLandscape(UIDevice.current.orientation) || UIScreen.main.bounds.size.width > height) {
             return nil
         }
         return Data.sharedData.logo2.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
     }
     
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(18),
-                     NSForegroundColorAttributeName: UIColor.darkGrayColor()]
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18),
+                     NSForegroundColorAttributeName: UIColor.darkGray]
         var string = "Ajoute une image de profil pour participer !"
         if !Data.isConnected() {
             string = "On botte en touche pour trouver ton pseudo, joue grâce à ton login ESEO !"
@@ -198,9 +198,9 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         return NSAttributedString(string: string, attributes: attrs)
     }
     
-    func buttonTitleForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(17),
-                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!]
+    func buttonTitle(forEmptyDataSet scrollView: UIScrollView!, for state: UIControlState) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17),
+                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!] as [String : Any]
         var string = "Mon profil"
         if !Data.isConnected() {
             string = "Me connecter"
@@ -208,11 +208,11 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
         return NSAttributedString(string: string, attributes: attrs)
     }
     
-    func emptyDataSet(scrollView: UIScrollView!, didTapButton: UIButton!) {
-        UIApplication.sharedApplication().sendAction(navigationItem.leftBarButtonItem!.action, to: navigationItem.leftBarButtonItem!.target, from: nil, forEvent: nil)
+    func emptyDataSet(_ scrollView: UIScrollView!, didTap didTapButton: UIButton!) {
+        UIApplication.shared.sendAction(navigationItem.leftBarButtonItem!.action!, to: navigationItem.leftBarButtonItem!.target, from: nil, for: nil)
     }
     
-    func emptyDataSetShouldDisplay(scrollView: UIScrollView!) -> Bool {
+    func emptyDataSetShouldDisplay(_ scrollView: UIScrollView!) -> Bool {
         return true
     }
 }
@@ -220,34 +220,34 @@ class Tinder: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
 //MARK: KolodaViewDelegate
 extension Tinder: KolodaViewDelegate {
     
-    func kolodaDidResetCard(koloda: KolodaView) {
-        UIView.animateWithDuration(0.5) {
+    func kolodaDidResetCard(_ koloda: KolodaView) {
+        UIView.animate(withDuration: 0.5, animations: {
             self.emptyLabel.alpha = 0.0
-        }
+        }) 
     }
     
-    func koloda(koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
-        if direction == .Right {
+    func koloda(_ koloda: KolodaView, didSwipeCardAtIndex index: UInt, inDirection direction: SwipeResultDirection) {
+        if direction == .right {
             if let login = KeychainSwift().get("login"),
-                passw = KeychainSwift().get("passw"),
-                coeur = matches[Int(index)]["login"] {
+               let passw = KeychainSwift().get("passw"),
+               let coeur = matches[Int(index)]["login"] {
                 let body = ["client": login,
                             "password": passw,
                             "coeur": coeur,
                             "hash": ("AdolfUnChien.com" + login + coeur + passw).sha256()]
                 Data.JSONRequest(Data.sharedData.phpURLs["sendMatch"]!, on: nil, post: body) { (JSON) in
                     if let json = JSON {
-                        if let status = json.valueForKey("status") as? Int,
-                            cause = json.valueForKey("cause") as? String {
+                        if let status = json["status"] as? Int,
+                            let cause = json["cause"] as? String {
                             if status != 1 {
-                                let alert = UIAlertController(title: "Erreur lors de l'ajout à vos touches", message: cause, preferredStyle: .Alert)
-                                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                                self.presentViewController(alert, animated: true, completion: nil)
+                                let alert = UIAlertController(title: "Erreur lors de l'ajout à vos touches", message: cause, preferredStyle: .alert)
+                                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                                self.present(alert, animated: true, completion: nil)
                             }
                         } else {
-                            let alert = UIAlertController(title: "Erreur lors de l'ajout à vos touches", message: "Erreur serveur", preferredStyle: .Alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            let alert = UIAlertController(title: "Erreur lors de l'ajout à vos touches", message: "Erreur serveur", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
                         }
                     }
                 }
@@ -255,34 +255,34 @@ extension Tinder: KolodaViewDelegate {
         }
     }
     
-    func kolodaDidRunOutOfCards(koloda: KolodaView) {
+    func kolodaDidRunOutOfCards(_ koloda: KolodaView) {
 //        kolodaView.resetCurrentCardIndex()
-        UIView.animateWithDuration(0.5) { 
+        UIView.animate(withDuration: 0.5, animations: { 
             self.emptyLabel.alpha = 1.0
-        }
+        }) 
         fetchData()
     }
     
-    func koloda(koloda: KolodaView, didSelectCardAtIndex index: UInt) {
+    func koloda(_ koloda: KolodaView, didSelectCardAtIndex index: UInt) {
         
     }
     
-    func kolodaShouldApplyAppearAnimation(koloda: KolodaView) -> Bool {
+    func kolodaShouldApplyAppearAnimation(_ koloda: KolodaView) -> Bool {
         return true
     }
     
-    func kolodaShouldMoveBackgroundCard(koloda: KolodaView) -> Bool {
+    func kolodaShouldMoveBackgroundCard(_ koloda: KolodaView) -> Bool {
         return false
     }
     
-    func kolodaShouldTransparentizeNextCard(koloda: KolodaView) -> Bool {
+    func kolodaShouldTransparentizeNextCard(_ koloda: KolodaView) -> Bool {
         return false
     }
     
     func koloda(kolodaBackgroundCardAnimation koloda: KolodaView) -> POPPropertyAnimation? {
         let animation = POPSpringAnimation(propertyNamed: kPOPViewFrame)
-        animation.springBounciness = 9
-        animation.springSpeed = 16
+        animation?.springBounciness = 9
+        animation?.springSpeed = 16
         return animation
     }
 }
@@ -290,20 +290,20 @@ extension Tinder: KolodaViewDelegate {
 //MARK: KolodaViewDataSource
 extension Tinder: KolodaViewDataSource {
     
-    func kolodaNumberOfCards(koloda: KolodaView) -> UInt {
+    func kolodaNumberOfCards(_ koloda: KolodaView) -> UInt {
         return UInt(matches.count)
     }
     
-    func koloda(koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
+    func koloda(_ koloda: KolodaView, viewForCardAtIndex index: UInt) -> UIView {
         let nib = UINib(nibName: "CardView", bundle: nil)
-        let card = nib.instantiateWithOwner(self, options: nil).first as! CardView
+        let card = nib.instantiate(withOwner: self, options: nil).first as! CardView
         card.layer.cornerRadius = 10
         card.layer.masksToBounds = true
         
         if matches.count > Int(index) {
             let match = matches[Int(index)]
             card.label.text = match["name"]
-            SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: match["img"]!), options: [],
+            SDWebImageManager.shared().downloadImage(with: URL(string: match["img"]!), options: [],
                                                                    progress: nil, completed: { (image, error, cacheType, finished, url) in
                                                                     if image != nil {
                                                                         card.image.image = image
@@ -314,8 +314,8 @@ extension Tinder: KolodaViewDataSource {
         return card
     }
     
-    func koloda(koloda: KolodaView, viewForCardOverlayAtIndex index: UInt) -> OverlayView? {
-        let overlay = UINib(nibName: "CardOverlay", bundle: nil).instantiateWithOwner(self, options: nil).first as! CardOverlay
+    func koloda(_ koloda: KolodaView, viewForCardOverlayAtIndex index: UInt) -> OverlayView? {
+        let overlay = UINib(nibName: "CardOverlay", bundle: nil).instantiate(withOwner: self, options: nil).first as! CardOverlay
         overlay.layer.cornerRadius = 10
         overlay.layer.masksToBounds = true
         return overlay

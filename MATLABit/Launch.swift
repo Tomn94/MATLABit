@@ -30,85 +30,84 @@ class Launch: UIViewController {
         super.viewDidLoad()
 
         spin.startAnimating()
-        Data.JSONRequest("https://web59.secure-secure.co.uk/francoisle.fr/wdidy/faq/data.json", on: self, post: nil, cache: .ReloadIgnoringLocalCacheData) { (JSON) in
+        Data.JSONRequest("https://web59.secure-secure.co.uk/francoisle.fr/wdidy/faq/data.json", on: self, post: nil, cache: .reloadIgnoringLocalCacheData) { (JSON) in
             self.spin.stopAnimating()
             if let json = JSON {
                 if let status = json["status"] as? Int,
-                    data   = json["data"] as? [String: AnyObject],
-                    logo   = data["logo"] as? String,
-                    logo2  = data["logoEux"] as? String,
-                    mp3    = data["son"] as? String,
-                    fb     = data["fb"] as? String,
-                    harder = data["harderiOS"] as? Double,
-                    php    = data["php"] as? [String: String],
-                    _ = php["connect"],
-                    _ = php["addPic"],
-                    _ = php["delPic"],
-                    _ = php["getScores"],
-                    _ = php["sendScore"],
-                    _ = php["getMatches"],
-                    _ = php["sendMatch"],
-                    _ = php["delMatch"],
-                    _ = php["getList"] {
+                   let data   = json["data"] as? [String: AnyObject],
+                   let logo   = data["logo"] as? String,
+                   let logo2  = data["logoEux"] as? String,
+                   let mp3    = data["son"] as? String,
+                   let fb     = data["fb"] as? String,
+                   let harder = data["harderiOS"] as? Double,
+                   let php    = data["php"] as? [String: String],
+                   let _ = php["connect"],
+                   let _ = php["addPic"],
+                   let _ = php["delPic"],
+                   let _ = php["getScores"],
+                   let _ = php["sendScore"],
+                   let _ = php["getMatches"],
+                   let _ = php["sendMatch"],
+                   let _ = php["delMatch"],
+                   let _ = php["getList"] {
                     if status == 200 {
-                        Data.sharedData.fbURL = NSURL(string: fb)
+                        Data.sharedData.fbURL = URL(string: fb)
                         Data.sharedData.harder = harder
                         Data.sharedData.phpURLs = php
-                        SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: logo), options: [],
+                        SDWebImageManager.shared().downloadImage(with: URL(string: logo), options: [],
                                                                                progress: nil, completed: { (image, error, cacheType, finished, url) in
-                            if image != nil {
+                            if let image = image {
                                 Data.sharedData.logo = image
-                                SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: logo2), options: [],
+                                SDWebImageManager.shared().downloadImage(with: URL(string: logo2), options: [],
                                     progress: nil, completed: { (image2, error2, cacheType2, finished2, url2) in
-                                        if image != nil {
+                                        if let image2 = image2 {
                                             Data.sharedData.logo2 = image2
                                             if !Data.hasMP3(mp3) {
-                                                let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
-                                                    delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
-                                                let dataTast = defaultSession.dataTaskWithURL(NSURL(string: mp3)!) { (data, resp, error) in
+                                                let defaultSession = URLSession(configuration: .default, delegate: nil, delegateQueue: .main)
+                                                let dataTast = defaultSession.dataTask(with: URL(string: mp3)!, completionHandler: { (data, resp, error) in
                                                     if error != nil || data == nil {
                                                         let alert = UIAlertController(title: "Oups…",
-                                                            message: "Impossible de télécharger les données (3/3)", preferredStyle: .ActionSheet)
-                                                        self.presentViewController(alert, animated: true, completion: nil)
+                                                            message: "Impossible de télécharger les données (3/3)", preferredStyle: .actionSheet)
+                                                        self.present(alert, animated: true, completion: nil)
                                                     }
                                                     else if let d = data {
-                                                        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-                                                        let filePath = documentsPath.stringByAppendingPathComponent("son.mp3")
-                                                        d.writeToFile(filePath, atomically: false)
-                                                        NSNotificationCenter.defaultCenter().postNotificationName("launchFinished", object: nil)
+                                                        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+                                                        let filePath = documentsPath.appendingPathComponent("son.mp3")
+                                                        try? d.write(to: URL(fileURLWithPath: filePath), options: [])
+                                                        NotificationCenter.default.post(name: Notification.Name(rawValue: "launchFinished"), object: nil)
                                                     }
-                                                }
+                                                }) 
                                                 dataTast.resume()
                                             } else {
-                                                NSNotificationCenter.defaultCenter().postNotificationName("launchFinished", object: nil)
+                                                NotificationCenter.default.post(name: Notification.Name(rawValue: "launchFinished"), object: nil)
                                             }
                                         } else {
                                             let alert = UIAlertController(title: "Oups…",
-                                                message: "Impossible de télécharger les données (2/3)", preferredStyle: .ActionSheet)
-                                            self.presentViewController(alert, animated: true, completion: nil)
+                                                message: "Impossible de télécharger les données (2/3)", preferredStyle: .actionSheet)
+                                            self.present(alert, animated: true, completion: nil)
                                         }
                                 })
                             } else {
                                 let alert = UIAlertController(title: "Oups…",
-                                    message: "Impossible de télécharger les données (1/3)", preferredStyle: .ActionSheet)
-                                self.presentViewController(alert, animated: true, completion: nil)
+                                    message: "Impossible de télécharger les données (1/3)", preferredStyle: .actionSheet)
+                                self.present(alert, animated: true, completion: nil)
                                                                                 }
                         })
                     } else {
                         let alert = UIAlertController(title: "Oups…",
-                                                      message: "Impossible de récupérer les données", preferredStyle: .ActionSheet)
-                        self.presentViewController(alert, animated: true, completion: nil)
+                                                      message: "Impossible de récupérer les données", preferredStyle: .actionSheet)
+                        self.present(alert, animated: true, completion: nil)
                     }
                 } else {
                     let alert = UIAlertController(title: "Erreur inconnue",
-                                                  message: "Vérifie ta connexion !", preferredStyle: .Alert)
-                    self.presentViewController(alert, animated: true, completion: nil)
+                                                  message: "Vérifie ta connexion !", preferredStyle: .alert)
+                    self.present(alert, animated: true, completion: nil)
                 }
             }
         }
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
 }

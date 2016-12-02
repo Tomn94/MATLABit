@@ -24,36 +24,36 @@ import UIKit
 class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
     var emptyDataSetView: DZNEmptyDataSetView!
-    private let reci = "  💞 réciproque"
+    fileprivate let reci = "  💞 réciproque"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let view = UIView()
-        view.backgroundColor = UIColor.groupTableViewBackgroundColor()
+        view.backgroundColor = UIColor.groupTableViewBackground
         tableView.backgroundView = view
         tableView.tableFooterView = UIView()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if let login = KeychainSwift().get("login"),
-            passw = KeychainSwift().get("passw") {
+            let passw = KeychainSwift().get("passw") {
             let body = ["client": login,
                         "password": passw,
                         "hash": ("JavaleduSwift,Taylor" + login + passw).sha256()]
             Data.JSONRequest(Data.sharedData.phpURLs["getList"]!, on: nil, post: body) { (JSON) in
                 if let json = JSON {
-                    if let status = json.valueForKey("status") as? Int,
-                        data = json.valueForKey("data") as? [String: AnyObject],
-                        moi = data["moi"] as? Array<[String: AnyObject]>,
-                        eux = data["eux"] as? Array<[String: AnyObject]> {
+                    if let status = json["status"] as? Int,
+                        let data = json["data"] as? [String: AnyObject],
+                        let moi = data["moi"] as? Array<[String: AnyObject]>,
+                        let eux = data["eux"] as? Array<[String: AnyObject]> {
                         if status == 1 {
                             let animation = CATransition()
                             animation.duration = 0.25
                             animation.type = kCATransitionFade
-                            self.tableView.layer.addAnimation(animation, forKey: nil)
+                            self.tableView.layer.add(animation, forKey: nil)
                             Data.sharedData.team = [moi, eux]
                         } else {
                             Data.sharedData.team = [Array<[String: AnyObject]>(), Array<[String: AnyObject]>()]
@@ -69,7 +69,7 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
     
     func loadFetchedData() {
         let hasData = !Data.sharedData.team[0].isEmpty && !Data.sharedData.team[1].isEmpty
-        tableView.backgroundColor = hasData ? UIColor.whiteColor() : UIColor.groupTableViewBackgroundColor()
+        tableView.backgroundColor = hasData ? UIColor.white : UIColor.groupTableViewBackground
         tableView.tableFooterView = hasData ? nil : UIView()
         
         tableView.reloadData()
@@ -78,15 +78,15 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
     
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return Data.sharedData.team.count
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Data.sharedData.team[section].count
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if Data.sharedData.team[0].count == 0 && Data.sharedData.team[1].count == 0 {
             return nil
         } else if section == 1 {
@@ -101,18 +101,18 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         return "Ta liste"
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("listeCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "listeCell", for: indexPath)
 
         let data = Data.sharedData.team[indexPath.section][indexPath.row]
         
         var txt = data["name"] as! String
         cell.textLabel?.text = txt
-        if let mutuel = data["mutual"] as? Bool where mutuel {
+        if let mutuel = data["mutual"] as? Bool, mutuel {
             txt += reci
             let at = NSMutableAttributedString(string: txt)
             let len = reci.characters.count
-            at.setAttributes([NSFontAttributeName: UIFont.systemFontOfSize(13), NSForegroundColorAttributeName: UIColor(white: 0.7, alpha: 1)],
+            at.setAttributes([NSFontAttributeName: UIFont.systemFont(ofSize: 13), NSForegroundColorAttributeName: UIColor(white: 0.7, alpha: 1)],
                              range: NSMakeRange(txt.characters.count - len, len + 1))
             cell.textLabel?.attributedText = at
         }
@@ -144,7 +144,7 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         cell.detailTextLabel?.text = sub
         
         if let url = data["img"] as? String {
-            cell.imageView?.sd_setImageWithURL(NSURL(string: url), placeholderImage: UIImage(named: "placeholder"))
+            cell.imageView?.sd_setImage(with: URL(string: url), placeholderImage: UIImage(named: "placeholder"))
         } else {
             cell.imageView?.image = UIImage(named: "placeholder")
         }
@@ -152,15 +152,15 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
         return cell
     }
 
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return indexPath.section == 0
     }
 
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
             if let coeur = Data.sharedData.team[0][indexPath.row]["login"] as? String,
-                login = KeychainSwift().get("login"),
-                passw = KeychainSwift().get("passw") {
+                let login = KeychainSwift().get("login"),
+                let passw = KeychainSwift().get("passw") {
                 let body = ["coeur": coeur,
                             "client": login,
                             "password": passw,
@@ -168,20 +168,20 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
                 
                 Data.JSONRequest(Data.sharedData.phpURLs["delMatch"]!, post: body) { (JSON) in
                     if let json = JSON,
-                        status = json.valueForKey("status") as? Int,
-                        cause = json.valueForKey("cause") as? String {
+                       let status = json["status"] as? Int,
+                       let cause = json["cause"] as? String {
                         if status == 1 {
-                            Data.sharedData.team[0].removeAtIndex(indexPath.row)
-                            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                            Data.sharedData.team[0].remove(at: indexPath.row)
+                            tableView.deleteRows(at: [indexPath], with: .fade)
                         } else {
-                            let alert = UIAlertController(title: "Erreur lors la suppresion", message: cause, preferredStyle: .Alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            let alert = UIAlertController(title: "Erreur lors la suppresion", message: cause, preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
                         }
                     } else {
-                        let alert = UIAlertController(title: "Erreur lors la suppresion", message: "Erreur serveur", preferredStyle: .Alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                        self.presentViewController(alert, animated: true, completion: nil)
+                        let alert = UIAlertController(title: "Erreur lors la suppresion", message: "Erreur serveur", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
                     }
                 }
             }
@@ -191,27 +191,27 @@ class Liste: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSour
     
     // MARK: - DZNEmptyDataSet
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        let height = UIScreen.mainScreen().bounds.size.height
-        if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > height) {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        let height = UIScreen.main.bounds.size.height
+        if UI_USER_INTERFACE_IDIOM() != .pad && (UIDeviceOrientationIsLandscape(UIDevice.current.orientation) || UIScreen.main.bounds.size.width > height) {
             return nil
         }
         return Data.sharedData.logo2.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
     }
     
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(18),
-                     NSForegroundColorAttributeName: UIColor.darkGrayColor()]
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18),
+                     NSForegroundColorAttributeName: UIColor.darkGray]
         return NSAttributedString(string: "Tu peux tenter une monarchie mais ça va être compliqué…\nAjoute des membres à ta liste !", attributes: attrs)
     }
     
-    func buttonTitleForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(17),
-                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!]
+    func buttonTitle(forEmptyDataSet scrollView: UIScrollView!, for state: UIControlState) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17),
+                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!] as [String : Any]
         return NSAttributedString(string: "Matcher", attributes: attrs)
     }
     
-    func emptyDataSet(scrollView: UIScrollView!, didTapButton: UIButton!) {
-        navigationController?.popViewControllerAnimated(true)
+    func emptyDataSet(_ scrollView: UIScrollView!, didTap didTapButton: UIButton!) {
+        _ = navigationController?.popViewController(animated: true)
     }
 }

@@ -9,14 +9,14 @@
 import UIKit
 
 public enum OverlayMode{
-    case None
-    case Left
-    case Right
+    case none
+    case left
+    case right
 }
 
 
-public class OverlayView: UIView {
+open class OverlayView: UIView {
     
-    public var overlayState:OverlayMode = OverlayMode.None
+    open var overlayState:OverlayMode = OverlayMode.none
     
 }

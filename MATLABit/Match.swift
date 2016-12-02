@@ -26,24 +26,24 @@ class Match: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var descLabel: UILabel!
     
-    private var nom = "Il/elle"
-    private var img = ""
+    fileprivate var nom = "Il/elle"
+    fileprivate var img = ""
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
         descLabel.text = nom + " te veut dans sa liste BDE"
         if img != "" {
-            imageView.sd_setImageWithURL(NSURL(string: img), placeholderImage: UIImage(named: "placeholder"))
+            imageView.sd_setImage(with: URL(string: img), placeholderImage: UIImage(named: "placeholder"))
         }
         
         imageView.layer.cornerRadius = CGFloat(imageView.frame.width / 2)
         imageView.clipsToBounds = true
         imageView.layer.borderWidth = 4
-        imageView.layer.borderColor = UIColor.whiteColor().CGColor
+        imageView.layer.borderColor = UIColor.white.cgColor
     }
     
-    func setVisualData(pic: String?, name: String?) {
+    func setVisualData(_ pic: String?, name: String?) {
         if let n = name {
             nom = n
         }
@@ -53,6 +53,6 @@ class Match: UIViewController {
     }
 
     @IBAction func close() {
-        dismissViewControllerAnimated(true, completion:nil)
+        dismiss(animated: true, completion:nil)
     }
 }

@@ -25,7 +25,7 @@ import SDWebImage
 class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
     private let nbrMaxConnectAttempts = 5
-    private let imgSize: CGFloat = max(UIScreen.mainScreen().bounds.size.height, UIScreen.mainScreen().bounds.size.width) < 500 ? 120 : 170
+    private let imgSize: CGFloat = max(UIScreen.main.bounds.size.height, UIScreen.main.bounds.size.width) < 500 ? 120 : 170
     private let ph = ["lannistertyr", "snowjohn", "starkarya", "whitewalter", "pinkmanjesse", "swansonron", "nadirabed", "mccormickkenny", "foxmulder", "goodmansaul", "rothasher", "archersterling"]
     
     var emptyDataSetView: DZNEmptyDataSetView!
@@ -40,15 +40,15 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        decoBtn = UIBarButtonItem(title: "Déconnexion", style: .Plain, target: self, action: #selector(deconnexion))
+        decoBtn = UIBarButtonItem(title: "Déconnexion", style: .plain, target: self, action: #selector(deconnexion))
         
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(viewWillAppear(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewWillAppear(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         chargerUI()
@@ -64,17 +64,17 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         
         if !Data.isConnected() {
             navigationItem.setLeftBarButtonItems([spinBtn], animated: true)
-            configureBannerWithImage(UIImage(named: "header"),
-                                     blurRadius: 0, blurTintColor: UIColor.clearColor(), saturationFactor: 1, maxHeight: 157)
+            configureBanner(with: UIImage(named: "header"),
+                                     blurRadius: 0, blurTintColor: UIColor.clear, saturationFactor: 1, maxHeight: 157)
         } else {
             navigationItem.setLeftBarButtonItems([decoBtn], animated: true)
-            configureBannerWithImage(nil)
+            configureBanner(with: nil)
         }
     }
     
     @IBAction func fermer() {
         if !uploading {
-            dismissViewControllerAnimated(true, completion: nil)
+            dismiss(animated: true, completion: nil)
         }
     }
     
@@ -86,8 +86,8 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             return
         }
         
-        let login = idField.text?.stringByTrimmingCharactersInSet(.whitespaceAndNewlineCharacterSet())
-        let pass: NSString = mdpField.text!
+        let login = idField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let pass: NSString = mdpField.text! as NSString
         
         if login == "" || pass == "" {
             return
@@ -96,44 +96,44 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         // Éviter le brute force et la surcharge
         var bug = false
         if let lastTry = Data.sharedData.connectionsTooMany {
-            if NSDate.timeIntervalSinceReferenceDate() - lastTry <= 300 {
+            if Date.timeIntervalSinceReferenceDate - lastTry <= 300 {
                 bug = true
             }
         }
         else if Data.sharedData.connectionsAttempts >= nbrMaxConnectAttempts {
-            Data.sharedData.connectionsTooMany = NSDate.timeIntervalSinceReferenceDate()
+            Data.sharedData.connectionsTooMany = Date.timeIntervalSinceReferenceDate
             bug = true
         }
         if bug {
             let alert = UIAlertController(title: "Doucement",
-                                          message: "Veuillez attendre 5 minutes, tu as réalisé trop de tentatives à la suite.", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title:"Mince !", style: .Cancel, handler:nil))
-            presentViewController(alert, animated:true, completion:nil)
+                                          message: "Veuillez attendre 5 minutes, tu as réalisé trop de tentatives à la suite.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title:"Mince !", style: .cancel, handler:nil))
+            present(alert, animated:true, completion:nil)
             return;
         }
         
         // CONNEXION
         Data.sharedData.connectionsAttempts += 1
         
-        connexionCell.textLabel?.enabled = false
-        connexionCell.userInteractionEnabled = false
-        connexionCell.selectionStyle = .None
+        connexionCell.textLabel?.isEnabled = false
+        connexionCell.isUserInteractionEnabled = false
+        connexionCell.selectionStyle = .none
         
         // Codage du mot de passe
         let passDec = NSMutableString()
         for i in 0 ..< pass.length {
-            let ch = pass.characterAtIndex(i)
+            let ch = pass.character(at: i)
             passDec.appendFormat("%c", (unichar)(ch + 1))
         }
-        let pass1: NSString = (pass.dataUsingEncoding(NSUTF8StringEncoding)?.base64EncodedStringWithOptions([]))!
-        let pass2: NSString = (passDec.dataUsingEncoding(NSUTF8StringEncoding)?.base64EncodedStringWithOptions([]))!
+        let pass1: NSString = (pass.data(using: String.Encoding.utf8.rawValue)?.base64EncodedString(options: []))! as NSString
+        let pass2: NSString = (passDec.data(using: String.Encoding.utf8.rawValue)?.base64EncodedString(options: []))! as NSString
         let passFinal = NSMutableString()
         for i in 0 ..< pass2.length {
-            passFinal.appendFormat("%c%c", pass1.characterAtIndex(i), pass2.characterAtIndex(i))
+            passFinal.appendFormat("%c%c", pass1.character(at: i), pass2.character(at: i))
         }
-        let finPass = passFinal.length > 2 ? passFinal.substringFromIndex(passFinal.length - 2) : ""
+        let finPass = passFinal.length > 2 ? passFinal.substring(from: passFinal.length - 2) : ""
         if finPass != "==" {
-            passFinal.appendString("==")
+            passFinal.append("==")
         }
         
         let lePassFinal = "Oups, erreur de connexion\(pass)".sha256()
@@ -146,37 +146,37 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             var connecté = false
             if let json = JSON {
                 let alert = UIAlertController(title: "Erreur inconnue",
-                                              message: "Impossible de valider votre connexion.", preferredStyle: .Alert)
+                                              message: "Impossible de valider votre connexion.", preferredStyle: .alert)
                 if let status = json["status"] as? Int,
-                    cause = json["cause"] as? String {
+                    let cause = json["cause"] as? String {
                     if status == 1 {
                         if let data = json["data"] as? [String: AnyObject],
-                            username = data["username"] as? String,
-                            info = data["info"] as? String,
-                            img = data["img"] as? String {
-                            let nom = username.componentsSeparatedByString(" ")[0]
+                            let username = data["username"] as? String,
+                            let info = data["info"] as? String,
+                            let img = data["img"] as? String {
+                            let nom = username.components(separatedBy: " ")[0]
                             var title = "Bienvenue \(nom) !"
-                            if info.containsString("existe") {
+                            if info.contains("existe") {
                                 title = "Hey, de retour, \(nom) !"
                             }
                             
                             if img != "" {
                                 self.uploading = true
-                                SDWebImageManager.sharedManager().downloadImageWithURL(NSURL(string: img), options: [],
+                                SDWebImageManager.shared().downloadImage(with: URL(string: img), options: [],
                                                                                        progress: nil, completed: { (image, error, cacheType, finished, url) in
                                                                                         self.uploading = false
-                                                                                        if image != nil {
-                                                                                            let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-                                                                                            let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
+                                                                                        if let image = image {
+                                                                                            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+                                                                                            let filePath = documentsPath.appendingPathComponent("imageProfil.jpg")
                                                                                             
-                                                                                            let pic = image.scaleAndCrop(CGSizeMake(self.imgSize, self.imgSize), retina: false, fit: false, opaque: true)
+                                                                                            let pic = image.scaleAndCrop(CGSize(width: self.imgSize, height: self.imgSize), retina: false, fit: false, opaque: true)
                                                                                             let imageData = UIImageJPEGRepresentation(pic, 1.0)
-                                                                                            imageData?.writeToFile(filePath, atomically: false)
+                                                                                            try? imageData?.write(to: URL(fileURLWithPath: filePath), options: [])
                                                                                             self.reloadEmpty()
                                                                                         } else {
                                                                                             let alert = UIAlertController(title: "Oups…",
-                                                                                                message: "Impossible de récupérer la photo de profil", preferredStyle: .ActionSheet)
-                                                                                            self.presentViewController(alert, animated: true, completion: nil)
+                                                                                                message: "Impossible de récupérer la photo de profil", preferredStyle: .actionSheet)
+                                                                                            self.present(alert, animated: true, completion: nil)
                                                                                         }
                                 })
                             }
@@ -201,20 +201,20 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
                     }
                 }
                 
-                alert.addAction(UIAlertAction(title: connecté ? "OKLM 👌🏼" : "OK", style: .Cancel, handler: { (a) in
+                alert.addAction(UIAlertAction(title: connecté ? "OKLM 👌🏼" : "OK", style: .cancel, handler: { (a) in
                     if connecté {
                         self.chargerUI()
                         self.tableView.reloadData()
                         self.reloadEmpty()
                     }
                 }))
-                self.presentViewController(alert, animated: true, completion: nil)
+                self.present(alert, animated: true, completion: nil)
             }
             
             self.spin.stopAnimating()
-            self.connexionCell.textLabel!.enabled = true
-            self.connexionCell.userInteractionEnabled = true
-            self.connexionCell.selectionStyle = .Default
+            self.connexionCell.textLabel!.isEnabled = true
+            self.connexionCell.isUserInteractionEnabled = true
+            self.connexionCell.selectionStyle = .default
         }
         uploading = true
         spin.startAnimating()
@@ -226,13 +226,13 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         }
         
         let alert = UIAlertController(title: "Veux-tu vraiment te déconnecter ?",
-                                      message: "On s'amusait bien !", preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "Annuler", style: .Cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "Oui", style: .Default, handler: { (a) in
+                                      message: "On s'amusait bien !", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Annuler", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Oui", style: .default, handler: { (a) in
             
-            let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-            let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
-            if NSData(contentsOfFile: filePath) != nil {
+            let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+            let filePath = documentsPath.appendingPathComponent("imageProfil.jpg")
+            if (try? Foundation.Data(contentsOf: URL(fileURLWithPath: filePath))) != nil {
                 self.removePhoto(false)
             }
             
@@ -241,66 +241,66 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             self.chargerUI()
             self.tableView.reloadData()
         }))
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
     
     
     // MARK: - Photo
     
     func choosePhoto() {
-        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
-        if NSData(contentsOfFile: filePath) != nil {
-            let alert = UIAlertController(title: "Changer l'image de profil", message: "", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "Supprimer la photo", style: .Destructive, handler: { (a) in
+        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+        let filePath = documentsPath.appendingPathComponent("imageProfil.jpg")
+        if (try? Foundation.Data(contentsOf: URL(fileURLWithPath: filePath))) != nil {
+            let alert = UIAlertController(title: "Changer l'image de profil", message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Supprimer la photo", style: .destructive, handler: { (a) in
                 self.removePhoto()
             }))
-            alert.addAction(UIAlertAction(title: "Choisir une photo", style: .Default, handler: { (a) in
+            alert.addAction(UIAlertAction(title: "Choisir une photo", style: .default, handler: { (a) in
                 self.showPhotos()
             }))
-            alert.addAction(UIAlertAction(title: "Annuler", style: .Cancel, handler: nil))
-            presentViewController(alert, animated: true, completion: nil)
+            alert.addAction(UIAlertAction(title: "Annuler", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
         } else {
             showPhotos()
         }
     }
     
-    func removePhoto(showAlert: Bool = true) {
+    func removePhoto(_ showAlert: Bool = true) {
         delPic(showAlert)
     }
     
-    func removePhotoDisk(showAlert: Bool = true) {
-        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
-        let fileManager = NSFileManager.defaultManager()
+    func removePhotoDisk(_ showAlert: Bool = true) {
+        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+        let filePath = documentsPath.appendingPathComponent("imageProfil.jpg")
+        let fileManager = FileManager.default
         do {
-            try fileManager.removeItemAtPath(filePath)
+            try fileManager.removeItem(atPath: filePath)
         } catch let error as NSError {
             if showAlert {
                 let alert = UIAlertController(title: "Impossible de supprimer l'image",
-                                              message: error.localizedDescription, preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                presentViewController(alert, animated: true, completion: nil)
+                                              message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                present(alert, animated: true, completion: nil)
             }
         }
     }
     
     func showPhotos() {
-        if (UI_USER_INTERFACE_IDIOM() == .Pad)
+        if (UI_USER_INTERFACE_IDIOM() == .pad)
         {
             let pop = UIImagePickerController()
-            pop.sourceType = .PhotoLibrary
+            pop.sourceType = .photoLibrary
             pop.delegate = self
             let popOver = UIPopoverController(contentViewController: pop)
-            popOver.presentPopoverFromRect(tableView.emptyDataSetView.imageView.convertRect(tableView.emptyDataSetView.imageView.bounds, toView: navigationController!.view), inView: view, permittedArrowDirections: .Any, animated: true)
+            popOver.present(from: tableView.emptyDataSetView.imageView.convert(tableView.emptyDataSetView.imageView.bounds, to: navigationController!.view), in: view, permittedArrowDirections: .any, animated: true)
         }
         else
         {
             let pop = UIImagePickerController()
-            pop.sourceType = .PhotoLibrary
+            pop.sourceType = .photoLibrary
             pop.delegate = self
-            presentViewController(pop, animated: true, completion: { 
-                UIApplication.sharedApplication().statusBarStyle = .LightContent
+            present(pop, animated: true, completion: { 
+                UIApplication.shared.statusBarStyle = .lightContent
             })
         }
     }
@@ -308,10 +308,10 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     
     // MARK: Upload
     
-    func uploadPic(selectedImage: UIImage) {
+    func uploadPic(_ selectedImage: UIImage) {
         
         if let login = KeychainSwift().get("login"),
-            passw = KeychainSwift().get("passw") {
+            let passw = KeychainSwift().get("passw") {
             let body = ["client": login,
                         "password": passw,
                         "hash": ("hmmmdaOUI42" + login + passw).sha256()]
@@ -319,14 +319,14 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             // Constantes
             let boundaryConstant  = "----------V2y2HZDDDFg03epSStjsqdbaKO0j1"
             let fileParamConstant = "file"
-            let requestUrl = NSURL(string: Data.sharedData.phpURLs["addPic"]!)
+            let requestUrl = URL(string: Data.sharedData.phpURLs["addPic"]!)
             
             // Requête
-            let request = NSMutableURLRequest(URL: requestUrl!)
-            request.cachePolicy = .ReloadIgnoringLocalCacheData
-            request.HTTPShouldHandleCookies = false
+            var request = URLRequest(url: requestUrl!)
+            request.cachePolicy = .reloadIgnoringLocalCacheData
+            request.httpShouldHandleCookies = false
             request.timeoutInterval = 30
-            request.HTTPMethod = "POST"
+            request.httpMethod = "POST"
             
             // Début du formatage
             let contentType = "multipart/form-data; boundary=" + boundaryConstant
@@ -335,68 +335,67 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
             // Ajout des paramètres POST normaux (client, pass, hash)
             let httpBody = NSMutableData()
             for param in body {
-                httpBody.appendData(("--" + boundaryConstant + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                httpBody.appendData(("Content-Disposition: form-data; name=\"" + param.0.URLencode() + "\"\r\n\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                httpBody.appendData((param.1.URLencode() + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
+                httpBody.append(("--" + boundaryConstant + "\r\n").data(using: String.Encoding.utf8)!)
+                httpBody.append(("Content-Disposition: form-data; name=\"" + param.0.URLencode() + "\"\r\n\r\n").data(using: String.Encoding.utf8)!)
+                httpBody.append((param.1.URLencode() + "\r\n").data(using: String.Encoding.utf8)!)
             }
             
             // Récupération de l'image JPEG sélectionnée, en ≈ 150×150
-            let pic = selectedImage.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
+            let pic = selectedImage.scaleAndCrop(CGSize(width: imgSize, height: imgSize), retina: false, fit: false, opaque: true)
             if let imageData = UIImageJPEGRepresentation(pic, 1.0) {
                 // Maintenant qu'on a l'image de type NSData, on la fout dans la requête
-                httpBody.appendData(("--" + boundaryConstant + "\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                httpBody.appendData(("Content-Disposition: form-data; name=\"" + fileParamConstant + "\"; filename=\"image.jpg\"\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                httpBody.appendData("Content-Type: image/jpeg\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
-                httpBody.appendData(imageData)
-                httpBody.appendData("\r\n".dataUsingEncoding(NSUTF8StringEncoding)!)
+                httpBody.append(("--" + boundaryConstant + "\r\n").data(using: String.Encoding.utf8)!)
+                httpBody.append(("Content-Disposition: form-data; name=\"" + fileParamConstant + "\"; filename=\"image.jpg\"\r\n").data(using: String.Encoding.utf8)!)
+                httpBody.append("Content-Type: image/jpeg\r\n\r\n".data(using: String.Encoding.utf8)!)
+                httpBody.append(imageData)
+                httpBody.append("\r\n".data(using: String.Encoding.utf8)!)
                 
                 // On finit
-                httpBody.appendData(("--" + boundaryConstant + "--\r\n").dataUsingEncoding(NSUTF8StringEncoding)!)
-                request.HTTPBody = httpBody
+                httpBody.append(("--" + boundaryConstant + "--\r\n").data(using: String.Encoding.utf8)!)
+                request.httpBody = httpBody as Foundation.Data
                 request.setValue(String(httpBody.length), forHTTPHeaderField: "Content-Length")
                 
                 // On envoie tout
-                let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
-                                                  delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
-                let dataTast = defaultSession.dataTaskWithRequest(request) { (data, resp, error) in
+                let defaultSession = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: .main)
+                let dataTast = defaultSession.dataTask(with: request, completionHandler: { (data, resp, error) in
                     self.spin.startAnimating()
                     Data.sharedData.needsLoadingSpin(false)
                     do {
                         if let d = data {
-                            let JSON = try NSJSONSerialization.JSONObjectWithData(d, options: [])
+                            let JSON = try JSONSerialization.jsonObject(with: d, options: []) as! [String: AnyObject]
                             if let status = JSON["status"] as? Int,
-                                cause = JSON["cause"] as? String {
+                                let cause = JSON["cause"] as? String {
                                 if status == 1 {
-                                    let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-                                    let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
-                                    imageData.writeToFile(filePath, atomically: false)
+                                    let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+                                    let filePath = documentsPath.appendingPathComponent("imageProfil.jpg")
+                                    try? imageData.write(to: URL(fileURLWithPath: filePath), options: [])
                                     self.reloadEmpty()
                                 } else {
                                     let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                                  message: cause, preferredStyle: .Alert)
-                                    alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                                    self.presentViewController(alert, animated: true, completion: nil)
+                                                                  message: cause, preferredStyle: .alert)
+                                    alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                                    self.present(alert, animated: true, completion: nil)
                                 }
                             } else {
                                 let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                              message: "Impossible de lire la réponse du serveur", preferredStyle: .Alert)
-                                alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                                self.presentViewController(alert, animated: true, completion: nil)
+                                                              message: "Impossible de lire la réponse du serveur", preferredStyle: .alert)
+                                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                                self.present(alert, animated: true, completion: nil)
                             }
                         } else {
                             let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                          message: "Impossible d'analyser la réponse du serveur", preferredStyle: .Alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                            self.presentViewController(alert, animated: true, completion: nil)
+                                                          message: "Impossible d'analyser la réponse du serveur", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
                         }
                     } catch {
                         let alert = UIAlertController(title: "Erreur lors de l'envoi de la photo",
-                                                      message: "Impossible de récupérer la réponse du serveur", preferredStyle: .Alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                        self.presentViewController(alert, animated: true, completion: nil)
+                                                      message: "Impossible de récupérer la réponse du serveur", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
                     }
                     self.uploading = false
-                }
+                }) 
                 uploading = true
                 spin.startAnimating()
                 Data.sharedData.needsLoadingSpin(true)
@@ -405,32 +404,32 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         }
     }
 
-    func delPic(showAlert: Bool = true) {
+    func delPic(_ showAlert: Bool = true) {
         if let login = KeychainSwift().get("login"),
-            passw = KeychainSwift().get("passw") {
+            let passw = KeychainSwift().get("passw") {
             let body = ["client": login,
                         "password": passw,
                         "hash": ("tucroixcketuvoiBaseDonneeSinusvidal" + login + passw).sha256()]
             Data.JSONRequest(Data.sharedData.phpURLs["delPic"]!, on: nil, post: body) { (JSON) in
                 self.uploading = false
                 if let json = JSON {
-                    if let status = json.valueForKey("status") as? Int,
-                        cause = json.valueForKey("cause") as? String {
+                    if let status = json["status"] as? Int,
+                        let cause = json["cause"] as? String {
                         if status != -10 {
                             self.removePhotoDisk(showAlert)
                             self.reloadEmpty()
                         }
                         if status != 1 && showAlert {
-                            let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: cause, preferredStyle: .Alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                            self.presentViewController(alert, animated: true, completion: nil)
+                            let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: cause, preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
                         }
                     } else if showAlert {
                         self.removePhotoDisk(showAlert)
                         self.reloadEmpty()
-                        let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: "Erreur serveur", preferredStyle: .Alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-                        self.presentViewController(alert, animated: true, completion: nil)
+                        let alert = UIAlertController(title: "Erreur lors de la demande de suppresion de la photo", message: "Erreur serveur", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
                     }
                 } else {
                     self.removePhotoDisk(showAlert)
@@ -444,35 +443,35 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
     
     // MARK: Image picker delegate
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         uploadPic(image)
         
         reloadEmpty()
         
-        dismissViewControllerAnimated(true) {
-            UIApplication.sharedApplication().statusBarStyle = .LightContent
+        dismiss(animated: true) {
+            UIApplication.shared.statusBarStyle = .lightContent
         }
     }
     
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        dismissViewControllerAnimated(true) {
-            UIApplication.sharedApplication().statusBarStyle = .LightContent
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true) {
+            UIApplication.shared.statusBarStyle = .lightContent
         }
     }
     
-    func navigationController(navigationController: UINavigationController, willShowViewController viewController: UIViewController, animated: Bool) {
-        UIApplication.sharedApplication().statusBarStyle = .LightContent
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        UIApplication.shared.statusBarStyle = .lightContent
     }
     
     
     // MARK: - Table view data source
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return (Data.isConnected()) ? 0 : 2
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if Data.isConnected() {
             return 0
         } else if section == 1 {
@@ -481,18 +480,18 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         return 2
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 && indexPath.row == 0 {
             connexion()
         }
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     
     // MARK: - Text Field delegate
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        if idField.isFirstResponder() {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if idField.isFirstResponder {
             return mdpField.becomeFirstResponder()
         } else {
             connexion()
@@ -500,10 +499,10 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         return false
     }
     
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let text = textField.text
-        var proposedString: NSString = (text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
-        proposedString = proposedString.stringByTrimmingCharactersInSet(.whitespaceCharacterSet())
+        var proposedString: NSString = (text! as NSString).replacingCharacters(in: range, with: string) as NSString
+        proposedString = proposedString.trimmingCharacters(in: .whitespaces) as NSString
         let length = proposedString.length
         
         var prev1 = idField.text != ""
@@ -517,8 +516,8 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         
         let nouv = prev1 && prev2
         if prev != nouv {
-            connexionCell.textLabel?.enabled = nouv
-            connexionCell.selectionStyle = (nouv) ? .Default : .None
+            connexionCell.textLabel?.isEnabled = nouv
+            connexionCell.selectionStyle = (nouv) ? .default : .none
         }
         
         if textField.tag > 0 {
@@ -535,38 +534,38 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         tableView.reloadEmptyDataSet()
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(choosePhoto))
-        tableView.emptyDataSetView.imageView.userInteractionEnabled = true
+        tableView.emptyDataSetView.imageView.isUserInteractionEnabled = true
         tableView.emptyDataSetView.imageView.addGestureRecognizer(tap)
         
         tableView.emptyDataSetView.imageView.layer.cornerRadius = CGFloat(imgSize / 2)
         tableView.emptyDataSetView.imageView.clipsToBounds = true
         tableView.emptyDataSetView.imageView.layer.borderWidth = 4
-        tableView.emptyDataSetView.imageView.layer.borderColor = UIColor.whiteColor().CGColor
+        tableView.emptyDataSetView.imageView.layer.borderColor = UIColor.white.cgColor
     }
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("imageProfil.jpg")
-        if let data = NSData(contentsOfFile: filePath) {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+        let filePath = documentsPath.appendingPathComponent("imageProfil.jpg")
+        if let data = try? Foundation.Data(contentsOf: URL(fileURLWithPath: filePath)) {
             return UIImage(data: data)
         }
         
-        if UIScreen.mainScreen().bounds.size.height < 500 {
-            return UIImage(named:"defaultUser")?.scaleAndCrop(CGSizeMake(imgSize, imgSize), retina: false, fit: false, opaque: true)
+        if UIScreen.main.bounds.size.height < 500 {
+            return UIImage(named:"defaultUser")?.scaleAndCrop(CGSize(width: imgSize, height: imgSize), retina: false, fit: false, opaque: true)
         }
         return UIImage(named:"defaultUser")
     }
     
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         let str = "Salut \(KeychainSwift().get("uname")!) !"
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(18),
-                     NSForegroundColorAttributeName: UIColor.darkGrayColor()]
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18),
+                     NSForegroundColorAttributeName: UIColor.darkGray]
         return NSAttributedString(string: str, attributes: attrs)
     }
     
-    func buttonTitleForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(17),
-                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!]
+    func buttonTitle(forEmptyDataSet scrollView: UIScrollView!, for state: UIControlState) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17),
+                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!] as [String : Any]
         var string = "Choisir une photo"
         if Data.hasProfilePic() {
             string = "Modifier ma photo"
@@ -574,7 +573,7 @@ class User: JAQBlurryTableViewController, UITextFieldDelegate, UIImagePickerCont
         return NSAttributedString(string: string, attributes: attrs)
     }
     
-    func emptyDataSet(scrollView: UIScrollView!, didTapButton: UIButton!) {
+    func emptyDataSet(_ scrollView: UIScrollView!, didTap didTapButton: UIButton!) {
         choosePhoto()
     }
 }

@@ -29,29 +29,29 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
         super.viewDidLoad()
         
         let view = UIView()
-        view.backgroundColor = UIColor.groupTableViewBackgroundColor()
+        view.backgroundColor = UIColor.groupTableViewBackground
         tableView.backgroundView = view
         tableView.tableFooterView = UIView()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if let login = KeychainSwift().get("login"),
-            passw = KeychainSwift().get("passw") {
+            let passw = KeychainSwift().get("passw") {
             let body = ["client": login,
                         "password": passw,
                         "hash": ("TheSubsLongestNight" + login + passw).sha256()]
             Data.JSONRequest(Data.sharedData.phpURLs["getBest"]!, on: nil, post: body) { (JSON) in
                 if let json = JSON {
-                    if let status = json.valueForKey("status") as? Int,
-                        data = json.valueForKey("data") as? [String: AnyObject],
-                        people = data["people"] as? Array<[String: AnyObject]> {
+                    if let status = json["status"] as? Int,
+                        let data = json["data"] as? [String: AnyObject],
+                        let people = data["people"] as? Array<[String: AnyObject]> {
                         if status == 1 {
                             let animation = CATransition()
                             animation.duration = 0.25
                             animation.type = kCATransitionFade
-                            self.tableView.layer.addAnimation(animation, forKey: nil)
+                            self.tableView.layer.add(animation, forKey: nil)
                             Data.sharedData.best = people
                         } else {
                             Data.sharedData.best = Array<[String: AnyObject]>()
@@ -67,7 +67,7 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
     
     func loadFetchedData() {
         let hasData = !Data.sharedData.best.isEmpty
-        tableView.backgroundColor = hasData ? UIColor.whiteColor() : UIColor.groupTableViewBackgroundColor()
+        tableView.backgroundColor = hasData ? UIColor.white : UIColor.groupTableViewBackground
         tableView.tableFooterView = hasData ? nil : UIView()
         
         tableView.reloadData()
@@ -76,16 +76,16 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
     
     // MARK: - Table view data source
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return Data.sharedData.best.isEmpty ? 0 : 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Data.sharedData.best.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("bestCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "bestCell", for: indexPath)
         
         let data = Data.sharedData.best[indexPath.row]
         cell.textLabel?.text = data["name"] as? String
@@ -101,7 +101,7 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
         cell.detailTextLabel?.text = sub
         
         if let url = data["img"] as? String {
-            cell.imageView?.sd_setImageWithURL(NSURL(string: url), placeholderImage: UIImage(named: "placeholder"))
+            cell.imageView?.sd_setImage(with: URL(string: url), placeholderImage: UIImage(named: "placeholder"))
         } else {
             cell.imageView?.image = UIImage(named: "placeholder")
         }
@@ -112,17 +112,17 @@ class Best: UITableViewController, DZNEmptyDataSetDelegate, DZNEmptyDataSetSourc
     
     // MARK: - DZNEmptyDataSet
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        let height = UIScreen.mainScreen().bounds.size.height
-        if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > height) {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        let height = UIScreen.main.bounds.size.height
+        if UI_USER_INTERFACE_IDIOM() != .pad && (UIDeviceOrientationIsLandscape(UIDevice.current.orientation) || UIScreen.main.bounds.size.width > height) {
             return nil
         }
         return Data.sharedData.logo2.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
     }
     
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(18),
-                     NSForegroundColorAttributeName: UIColor.darkGrayColor()]
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18),
+                     NSForegroundColorAttributeName: UIColor.darkGray]
         return NSAttributedString(string: "Encore aucun match !", attributes: attrs)
     }
 }

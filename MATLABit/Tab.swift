@@ -28,10 +28,10 @@ class Tab: UITabBarController, UITabBarControllerDelegate {
         delegate = self
     }
     
-    func tabBarController(tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
-        if tabBarController.viewControllers?.indexOf(viewController) == 3 {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if tabBarController.viewControllers?.index(of: viewController) == 3 {
             if let url = Data.sharedData.fbURL {
-                UIApplication.sharedApplication().openURL(url)
+                UIApplication.shared.openURL(url as URL)
             }
             return false
         }

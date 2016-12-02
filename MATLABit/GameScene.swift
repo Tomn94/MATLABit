@@ -29,11 +29,11 @@ class GameVC : UIViewController {
     convenience init() {
         self.init(nibName:nil, bundle:nil)
         
-        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
-        let filePath = documentsPath.stringByAppendingPathComponent("son.mp3")
-        let url = NSURL(fileURLWithPath: filePath)
+        let documentsPath: NSString = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+        let filePath = documentsPath.appendingPathComponent("son.mp3")
+        let url = URL(fileURLWithPath: filePath)
         do {
-            audioPlayer = try AVAudioPlayer(contentsOfURL: url)
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer!.numberOfLoops = -1
             audioPlayer!.prepareToPlay()
         } catch {
@@ -46,62 +46,62 @@ class GameVC : UIViewController {
         
         let gameView = self.view as! SKView
         if gameView.scene == nil {
-            let scene = GameScene(size: CGSizeMake(max(gameView.bounds.size.height,gameView.bounds.size.width), min(gameView.bounds.size.height,gameView.bounds.size.width)))
-            scene.scaleMode = .AspectFill
+            let scene = GameScene(size: CGSize(width: max(gameView.bounds.size.height,gameView.bounds.size.width), height: min(gameView.bounds.size.height,gameView.bounds.size.width)))
+            scene.scaleMode = .aspectFill
             gameView.presentScene(scene)
             
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(quit), name: "quitGame", object: nil)
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(error(_:)), name: "errorGame", object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(quit), name: NSNotification.Name(rawValue: "quitGame"), object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(error(_:)), name: NSNotification.Name(rawValue: "errorGame"), object: nil)
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if let ap = audioPlayer {
             ap.play()
         }
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let ap = audioPlayer {
             ap.stop()
         }
     }
     
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        return .Landscape
+    override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
+        return .landscape
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
-    func error(notif: NSNotification) {
+    func error(_ notif: Notification) {
         if let info = notif.userInfo as? Dictionary<String, String> {
-            let alert = UIAlertController(title: "Erreur lors de l'envoi du score. Essaie de te reconnecter", message: info["message"], preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-            presentViewController(alert, animated: true, completion: nil)
+            let alert = UIAlertController(title: "Erreur lors de l'envoi du score. Essaie de te reconnecter", message: info["message"], preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
         }
     }
     
     func quit() {
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 }
 
 
 enum CollisionType: UInt32 {
-    case NoType = 0
-    case Blade = 1
-    case Flying = 2
+    case noType = 0
+    case blade = 1
+    case flying = 2
 }
 
 enum ExplosionType {
-    case Fruit
-    case SpecialFruit
-    case Bomb
-    case Bonus
+    case fruit
+    case specialFruit
+    case bomb
+    case bonus
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -111,11 +111,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private let livesMax = 5
     private let difficultéMax = 3.5
     private let scoreMaxDifficulté = 130
-    private let bladeMaxTouchTime: NSTimeInterval = 2
+    private let bladeMaxTouchTime: TimeInterval = 2
     private var harder = 1.0
     
     private var blade: SWBlade?
-    private var bladeDelta = CGPointZero
+    private var bladeDelta = CGPoint.zero
     private let scoreHUD = SKLabelNode(fontNamed: "Gang of Three")
     private let bestHUD = SKLabelNode(fontNamed: "Gang of Three")
     private var lostHUD: SKLabelNode?
@@ -130,23 +130,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var playing = true
     private var score = 0
     private var lives = 3
-    private var timeStart: NSTimeInterval = 0
-    private var timeStartTouch: NSTimeInterval = 0
-    private var timeLastFruit: NSTimeInterval = 0
+    private var timeStart: TimeInterval = 0
+    private var timeStartTouch: TimeInterval = 0
+    private var timeLastFruit: TimeInterval = 0
     private var best = Data.sharedData.bestScore
     
     private var contactQueue = Array<SKPhysicsContact>()
 
-    override func didMoveToView(view: SKView) {
+    override func didMove(to view: SKView) {
         if Data.sharedData.harder > 1.0 {
             harder = Data.sharedData.harder
         }
         
-        backgroundColor = UIColor.blackColor()
+        backgroundColor = UIColor.black
         let back = SKSpriteNode(imageNamed:"backFruit")
         back.zPosition = -1
         back.size = size
-        back.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
+        back.position = CGPoint(x: frame.midX, y: frame.midY)
         addChild(back)
         
         updateScore(0)
@@ -155,7 +155,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreHUD.fontColor = UIColor(red: 1.0, green: 0.8, blue: 0.4, alpha: 1.0)
         scoreHUDpos = CGPoint(x: 15, y: size.height - scoreHUD.frame.size.height - 12)
         scoreHUD.position = scoreHUDpos
-        scoreHUD.horizontalAlignmentMode = .Left
+        scoreHUD.horizontalAlignmentMode = .left
         addChild(scoreHUD)
         
         bestHUD.zPosition = 1
@@ -163,7 +163,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bestHUD.fontColor = UIColor(red: 1.0, green: 0.8, blue: 0.4, alpha: 0.6)
         bestHUDpos = CGPoint(x: 15, y: scoreHUD.position.y - 21)
         bestHUD.position = bestHUDpos
-        bestHUD.horizontalAlignmentMode = .Left
+        bestHUD.horizontalAlignmentMode = .left
         addChild(bestHUD)
         
         let posX = size.width - 25
@@ -183,10 +183,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Update Events
     
-    override func update(currentTime: NSTimeInterval) {
+    override func update(_ currentTime: TimeInterval) {
         // Blade
         blade?.position = CGPoint(x: (blade?.position.x)! + bladeDelta.x, y: (blade?.position.y)! + bladeDelta.y)
-        bladeDelta = CGPointZero
+        bladeDelta = CGPoint.zero
         
         // Delay game beginning
         if timeStart == 0 {
@@ -225,7 +225,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Lost fruit
-        enumerateChildNodesWithName("fruit") { (fruit, stop) in
+        enumerateChildNodes(withName: "fruit") { (fruit, stop) in
             if fruit.position.y < 0 {
                 fruit.removeFromParent()
                 self.updateLives(-1)
@@ -233,7 +233,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func updateScore(by: Int) {
+    func updateScore(_ by: Int) {
         if !playing {
             return
         }
@@ -245,13 +245,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         scoreHUD.text = String(score)
         if score >= best {
-            bestHUD.runAction(SKAction.fadeOutWithDuration(0.5))
+            bestHUD.run(SKAction.fadeOut(withDuration: 0.5))
         } else if score < best {
             bestHUD.text = "MAX: " + String(best)
         }
     }
     
-    func updateLives(by: Int) {
+    func updateLives(_ by: Int) {
         if !playing ||
             lives + by > livesMax {
             return
@@ -300,8 +300,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         lostHUD2!.fontSize = 104 * size.width / 667
         lostHUD!.fontColor = UIColor(red: 0.9867, green: 0.1506, blue: 0.2419, alpha: 1.0 )
         lostHUD2!.fontColor = UIColor(white: 0, alpha: 0.6)
-        lostHUD!.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
-        lostHUD2!.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
+        lostHUD!.position = CGPoint(x: frame.midX, y: frame.midY)
+        lostHUD2!.position = CGPoint(x: frame.midX, y: frame.midY)
         lostHUD!.setScale(4)
         lostHUD2!.setScale(4)
         lostHUD!.alpha = 0
@@ -309,31 +309,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(lostHUD!)
         addChild(lostHUD2!)
         
-        lostHUD! .runAction(SKAction.group([SKAction.fadeInWithDuration(0.3), SKAction.scaleTo(1, duration: 0.3)]))
-        lostHUD2!.runAction(SKAction.group([SKAction.fadeInWithDuration(0.3), SKAction.scaleTo(1, duration: 0.3)]))
+        lostHUD! .run(SKAction.group([SKAction.fadeIn(withDuration: 0.3), SKAction.scale(to: 1, duration: 0.3)]))
+        lostHUD2!.run(SKAction.group([SKAction.fadeIn(withDuration: 0.3), SKAction.scale(to: 1, duration: 0.3)]))
         
         let newScale = 2 * size.width / 667
         let newYBest = 78 * size.width / 667
-        scoreHUD.runAction(SKAction.group([SKAction.moveTo(CGPoint(x: 15, y: 15),       duration: 0.3), SKAction.scaleTo(newScale, duration: 0.3)]))
-        bestHUD .runAction(SKAction.group([SKAction.moveTo(CGPoint(x: 15, y: newYBest), duration: 0.3), SKAction.scaleTo(newScale, duration: 0.3)]))
+        scoreHUD.run(SKAction.group([SKAction.move(to: CGPoint(x: 15, y: 15),       duration: 0.3), SKAction.scale(to: newScale, duration: 0.3)]))
+        bestHUD .run(SKAction.group([SKAction.move(to: CGPoint(x: 15, y: newYBest), duration: 0.3), SKAction.scale(to: newScale, duration: 0.3)]))
         
         btnRetry = SKSpriteNode(imageNamed: "btnRetry")
         btnRetry!.name = "btnRetry"
         btnRetry!.zPosition = 200
         btnRetry!.setScale(0.3)
-        btnRetry!.position = CGPoint(x: CGRectGetMidX(frame) + 60, y: CGRectGetMidY(frame) - 80)
+        btnRetry!.position = CGPoint(x: frame.midX + 60, y: frame.midY - 80)
         btnRetry!.alpha = 0
         addChild(btnRetry!)
-        btnRetry!.runAction(SKAction.sequence([SKAction.waitForDuration(1.15), SKAction.fadeInWithDuration(0.3)]))
+        btnRetry!.run(SKAction.sequence([SKAction.wait(forDuration: 1.15), SKAction.fadeIn(withDuration: 0.3)]))
         
         btnQuit = SKSpriteNode(imageNamed: "btnQuit")
         btnQuit!.name = "btnQuit"
         btnQuit!.zPosition = 200
         btnQuit!.setScale(0.3)
-        btnQuit!.position = CGPoint(x: CGRectGetMidX(frame) - 60, y: CGRectGetMidY(frame) - 80)
+        btnQuit!.position = CGPoint(x: frame.midX - 60, y: frame.midY - 80)
         btnQuit!.alpha = 0
         addChild(btnQuit!)
-        btnQuit!.runAction(SKAction.sequence([SKAction.waitForDuration(1.15), SKAction.fadeInWithDuration(0.3)]))
+        btnQuit!.run(SKAction.sequence([SKAction.wait(forDuration: 1.15), SKAction.fadeIn(withDuration: 0.3)]))
         
         if score > best {
             best = score
@@ -349,28 +349,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func retry() {
         if let lost = lostHUD,
-            lost2 = lostHUD2,
-            retry = btnRetry,
-            quit = btnQuit {
-            lost.runAction(SKAction.group([SKAction.fadeOutWithDuration(0.3), SKAction.scaleTo(4, duration: 0.3)]))
-            lost2.runAction(SKAction.group([SKAction.fadeOutWithDuration(0.3), SKAction.scaleTo(4, duration: 0.3)]))
-            quit.runAction(SKAction.fadeOutWithDuration(0.3))
-            retry.runAction(SKAction.fadeOutWithDuration(0.3))
+            let lost2 = lostHUD2,
+            let retry = btnRetry,
+            let quit = btnQuit {
+            lost.run(SKAction.group([SKAction.fadeOut(withDuration: 0.3), SKAction.scale(to: 4, duration: 0.3)]))
+            lost2.run(SKAction.group([SKAction.fadeOut(withDuration: 0.3), SKAction.scale(to: 4, duration: 0.3)]))
+            quit.run(SKAction.fadeOut(withDuration: 0.3))
+            retry.run(SKAction.fadeOut(withDuration: 0.3))
         }
         if let emitter = bestEmitter {
             emitter.removeFromParent()
         }
         
-        scoreHUD.runAction(SKAction.group([SKAction.moveTo(scoreHUDpos, duration: 0.3), SKAction.scaleTo(1, duration: 0.3)]))
-        bestHUD .runAction(SKAction.group([SKAction.moveTo(bestHUDpos,  duration: 0.3), SKAction.scaleTo(1, duration: 0.3), SKAction.fadeInWithDuration(0.3)]))
+        scoreHUD.run(SKAction.group([SKAction.move(to: scoreHUDpos, duration: 0.3), SKAction.scale(to: 1, duration: 0.3)]))
+        bestHUD .run(SKAction.group([SKAction.move(to: bestHUDpos,  duration: 0.3), SKAction.scale(to: 1, duration: 0.3), SKAction.fadeIn(withDuration: 0.3)]))
         
-        enumerateChildNodesWithName("fruit") { (node, stop) in
+        enumerateChildNodes(withName: "fruit") { (node, stop) in
             node.removeFromParent()
         }
-        enumerateChildNodesWithName("bomb") { (node, stop) in
+        enumerateChildNodes(withName: "bomb") { (node, stop) in
             node.removeFromParent()
         }
-        enumerateChildNodesWithName("bonus") { (node, stop) in
+        enumerateChildNodes(withName: "bonus") { (node, stop) in
             node.removeFromParent()
         }
         
@@ -386,12 +386,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func quit() {
-        NSNotificationCenter.defaultCenter().postNotificationName("quitGame", object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "quitGame"), object: nil)
     }
     
     func sendBestScore() {
         if let login = KeychainSwift().get("login"),
-            passw = KeychainSwift().get("passw") {
+            let passw = KeychainSwift().get("passw") {
             let body = ["score": String(best),
                         "client": login,
                         "password": passw,
@@ -400,13 +400,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             Data.JSONRequest(Data.sharedData.phpURLs["sendScore"]!, post: body) { (JSON) in
                 if let json = JSON,
-                    status = json.valueForKey("status") as? Int,
-                    cause = json.valueForKey("cause") as? String {
+                    let status = json["status"] as? Int,
+                    let cause = json["cause"] as? String {
                     if status != 1 {
-                        NSNotificationCenter.defaultCenter().postNotificationName("errorGame", object: nil, userInfo: ["message": cause])
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "errorGame"), object: nil, userInfo: ["message": cause])
                     }
                 } else {
-                    NSNotificationCenter.defaultCenter().postNotificationName("errorGame", object: nil, userInfo: ["message": "Erreur serveur"])
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "errorGame"), object: nil, userInfo: ["message": "Erreur serveur"])
                 }
             }
         }
@@ -415,52 +415,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - Touch Events
     
-    func showBladeAt(position: CGPoint) {
-        blade = SWBlade(position: position, target: self, color: UIColor.whiteColor())
+    func showBladeAt(_ position: CGPoint) {
+        blade = SWBlade(position: position, target: self, color: UIColor.white)
         addChild(blade!)
-        blade!.enablePhysics(CollisionType.Blade.rawValue,
-                             contactTestBitmask: CollisionType.NoType.rawValue,
-                             collisionBitmask: CollisionType.NoType.rawValue)
+        blade!.enablePhysics(CollisionType.blade.rawValue,
+                             contactTestBitmask: CollisionType.noType.rawValue,
+                             collisionBitmask: CollisionType.noType.rawValue)
     }
     
     func hideBlade() {
-        bladeDelta = CGPointZero
+        bladeDelta = CGPoint.zero
         
-        blade?.runAction(SKAction.sequence([SKAction.fadeOutWithDuration(0.25), SKAction.removeFromParent()]))
+        blade?.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.25), SKAction.removeFromParent()]))
         blade?.emitter.removeFromParent()
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            let loc = touch.locationInNode(self)
-            timeStartTouch = NSDate.timeIntervalSinceReferenceDate()
+            let loc = touch.location(in: self)
+            timeStartTouch = Date.timeIntervalSinceReferenceDate
             showBladeAt(loc)
         }
     }
     
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            if NSDate.timeIntervalSinceReferenceDate() - timeStartTouch > bladeMaxTouchTime {
+            if Date.timeIntervalSinceReferenceDate - timeStartTouch > bladeMaxTouchTime {
                 timeStartTouch = 0
                 hideBlade()
                 return
             }
-            let currentLoc = touch.locationInNode(self)
-            let previousLoc = touch.previousLocationInNode(self)
+            let currentLoc = touch.location(in: self)
+            let previousLoc = touch.previousLocation(in: self)
             
-            bladeDelta = CGPointMake(currentLoc.x - previousLoc.x, currentLoc.y - previousLoc.y)
+            bladeDelta = CGPoint(x: currentLoc.x - previousLoc.x, y: currentLoc.y - previousLoc.y)
         }
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         timeStartTouch = 0
         hideBlade()
         
         if !playing,
             let touch = touches.first {
-            let loc = touch.locationInNode(self)
+            let loc = touch.location(in: self)
             
-            let node = nodeAtPoint(loc)
+            let node = atPoint(loc)
             if node.name == "btnRetry" {
                 retry()
             } else if node.name == "btnQuit" {
@@ -469,7 +469,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         timeStartTouch = 0
         hideBlade()
     }
@@ -477,11 +477,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - Contact Events
     
-    func didBeginContact(contact: SKPhysicsContact) {
+    func didBegin(_ contact: SKPhysicsContact) {
         contactQueue.append(contact)
     }
     
-    func processContactForUpdate(currentTime: NSTimeInterval) {
+    func processContactForUpdate(_ currentTime: TimeInterval) {
         let contacts = contactQueue
         for contact in contacts {
             handleContact(contact)
@@ -489,34 +489,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func handleContact(contact: SKPhysicsContact) {
+    func handleContact(_ contact: SKPhysicsContact) {
         if let bodyA = contact.bodyA.node,
             let bodyB = contact.bodyB.node {
             if bodyA.parent != nil && bodyB.parent != nil {
                 let nodeNames = [bodyA.name, bodyB.name]
                 
-                if nodeNames.contains({$0 == "skblade"}) {
-                    if let fruitIndex = nodeNames.indexOf({$0 == "fruit"}) {
+                if nodeNames.contains(where: {$0 == "skblade"}) {
+                    if let fruitIndex = nodeNames.index(where: {$0 == "fruit"}) {
                         let fruit = fruitIndex > 0 ? bodyB : bodyA
                         
                         let special = fruit.userData!["specialFruit"] as! Bool
-                        explode(fruit.position, type: special ? .SpecialFruit : .Fruit)
-                        fruit.runAction(SKAction.sequence([SKAction.fadeOutWithDuration(0.1), SKAction.removeFromParent()]))
+                        explode(fruit.position, type: special ? .specialFruit : .fruit)
+                        fruit.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.1), SKAction.removeFromParent()]))
                         
                         updateScore((special) ? 5 : 1)
-                    } else if let bombIndex = nodeNames.indexOf({$0 == "bomb"}) {
+                    } else if let bombIndex = nodeNames.index(where: {$0 == "bomb"}) {
                         let bomb = bombIndex > 0 ? bodyB : bodyA
                         
-                        explode(bomb.position, type: .Bomb)
-                        bomb.runAction(SKAction.sequence([SKAction.fadeOutWithDuration(0.1), SKAction.removeFromParent()]))
+                        explode(bomb.position, type: .bomb)
+                        bomb.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.1), SKAction.removeFromParent()]))
                         
                         updateScore(-10)
                         updateLives(-1)
-                    } else if let bonusIndex = nodeNames.indexOf({$0 == "bonus"}) {
+                    } else if let bonusIndex = nodeNames.index(where: {$0 == "bonus"}) {
                         let bonus = bonusIndex > 0 ? bodyB : bodyA
                         
-                        explode(bonus.position, type: .Bonus)
-                        bonus.runAction(SKAction.sequence([SKAction.fadeOutWithDuration(0.1), SKAction.removeFromParent()]))
+                        explode(bonus.position, type: .bonus)
+                        bonus.run(SKAction.sequence([SKAction.fadeOut(withDuration: 0.1), SKAction.removeFromParent()]))
                         
                         updateScore(10)
                         updateLives(1)
@@ -526,19 +526,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func explode(position: CGPoint, type: ExplosionType) {
+    func explode(_ position: CGPoint, type: ExplosionType) {
         var emitter = SKEmitterNode(fileNamed: "ExplosionPart.sks")!
         
         switch type {
-        case .Fruit:
+        case .fruit:
             break
-        case .SpecialFruit:
-            emitter.particleColorSequence = SKKeyframeSequence(keyframeValues: [SKColor.whiteColor(), SKColor.redColor()],
+        case .specialFruit:
+            emitter.particleColorSequence = SKKeyframeSequence(keyframeValues: [SKColor.white, SKColor.red],
                                                                times: [0, 0.15])
-        case .Bomb:
+        case .bomb:
             emitter = SKEmitterNode(fileNamed: "FirePart.sks")!
-        case .Bonus:
-            emitter.particleColorSequence = SKKeyframeSequence(keyframeValues: [SKColor.whiteColor(), SKColor.yellowColor()],
+        case .bonus:
+            emitter.particleColorSequence = SKKeyframeSequence(keyframeValues: [SKColor.white, SKColor.yellow],
                                                                times: [0, 0.15])
         }
         
@@ -547,7 +547,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         emitter.zPosition = 5
         addChild(emitter)
 
-        emitter.runAction(SKAction.sequence([SKAction.waitForDuration(1), SKAction.removeFromParent()]))
+        emitter.run(SKAction.sequence([SKAction.wait(forDuration: 1), SKAction.removeFromParent()]))
     }
 }
 
@@ -555,9 +555,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 // MARK: - Fruit, Bomb, Bonus
 
 extension SKNode {
-    func setFlyingPhysics(diameter: CGFloat, scene: SKScene) {
-        let viewHeight = (scene.size.height ?? 375) / 375
-        let viewWidth = (scene.size.width ?? 667) / 667
+    func setFlyingPhysics(_ diameter: CGFloat, scene: SKScene) {
+        let viewHeight = scene.size.height / 375
+        let viewWidth = scene.size.width / 667
         let direction: Int8 = arc4random_uniform(2) == 1 ? 1 : -1
         let xMult: CGFloat = CGFloat(arc4random_uniform(UInt32(60 * viewWidth))) / 10 + 0.5
         let widthMult: Double = Double(arc4random_uniform(UInt32(10 * viewWidth))) / 10 + 0.02
@@ -566,15 +566,15 @@ extension SKNode {
         
         userData = ["specialFruit": false]
         zPosition = 2
-        position = CGPoint(x: ((scene.size.width ?? 375) / 2) - (50 * xMult * CGFloat(direction)), y: 0)
+        position = CGPoint(x: (scene.size.width / 2) - (50 * xMult * CGFloat(direction)), y: 0)
         
         let physics = SKPhysicsBody(circleOfRadius: diameter / 2)
         physics.affectedByGravity = true
         physics.velocity = CGVector(dx: 300 * widthMult * Double(direction), dy: 500 * heightMult)
         physics.angularVelocity = angular
-        physics.categoryBitMask = CollisionType.Flying.rawValue
-        physics.contactTestBitMask = CollisionType.Blade.rawValue
-        physics.collisionBitMask = CollisionType.NoType.rawValue
+        physics.categoryBitMask = CollisionType.flying.rawValue
+        physics.contactTestBitMask = CollisionType.blade.rawValue
+        physics.collisionBitMask = CollisionType.noType.rawValue
         
         physicsBody = physics
     }

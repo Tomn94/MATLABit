@@ -35,8 +35,8 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
     @IBOutlet var playBtn: UIBarButtonItem!
     private var animator: UIDynamicAnimator!
     
-    private var iOSPic = UIImage(named: "ios")?.scaleAndCrop(CGSize(width: 15, height: 15)).imageWithRenderingMode(.AlwaysTemplate)
-    private var androidPic = UIImage(named: "android")?.scaleAndCrop(CGSize(width: 15, height: 15)).imageWithRenderingMode(.AlwaysTemplate)
+    private var iOSPic = UIImage(named: "ios")?.scaleAndCrop(CGSize(width: 15, height: 15)).withRenderingMode(.alwaysTemplate)
+    private var androidPic = UIImage(named: "android")?.scaleAndCrop(CGSize(width: 15, height: 15)).withRenderingMode(.alwaysTemplate)
     
     private var scores = Array<Array<(String, Int, String, Int)>>()
     
@@ -49,40 +49,40 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         animator = UIDynamicAnimator(referenceView: content)
         
         let backView = UIView()
-        backView.backgroundColor = UIColor.groupTableViewBackgroundColor()
+        backView.backgroundColor = UIColor.groupTableViewBackground
         tableView.backgroundView = backView
         
         loadFetchedData()
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(viewWillAppear(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewWillAppear(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         tableView.reloadEmptyDataSet()
         Data.JSONRequest(Data.sharedData.phpURLs["getScores"]!, on: nil) { (JSON) in
             if let json = JSON {
-                if let status = json.valueForKey("status") as? Int,
-                    data = json.valueForKey("data") as? [String: AnyObject],
-                    scores = data["scores"] as? [AnyObject] {
+                if let status = json["status"] as? Int,
+                   let data   = json["data"]   as? [String: AnyObject],
+                   let scores = data["scores"] as? [AnyObject] {
                     if status == 1 {
                         var newScores = Array<(String, Int, String, Int)>()
                         for score in scores {
-                            let tuple = (score.valueForKey("login") as! String,
-                                         score.valueForKey("score") as! Int,
-                                         score.valueForKey("os") as! String,
-                                         score.valueForKey("order") as! Int)
-                            let name = score.valueForKey("login") as? String
+                            let tuple = (score.value(forKey: "login") as! String,
+                                         score.value(forKey: "score") as! Int,
+                                         score.value(forKey: "os") as! String,
+                                         score.value(forKey: "order") as! Int)
+                            let name = score.value(forKey: "login") as? String
                             if name == KeychainSwift().get("login") || name == KeychainSwift().get("uname") {
-                                Data.sharedData.bestScore = score.valueForKey("score") as? Int ?? 0
+                                Data.sharedData.bestScore = score.value(forKey: "score") as? Int ?? 0
                             }
                             newScores.append(tuple)
                         }
                         let animation = CATransition()
                         animation.duration = 0.25
                         animation.type = kCATransitionFade
-                        self.tableView.layer.addAnimation(animation, forKey: nil)
+                        self.tableView.layer.add(animation, forKey: nil)
                         Data.sharedData.scores = newScores
                     } else {
                         Data.sharedData.scores = Array<(String, Int, String, Int)>()
@@ -95,7 +95,7 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         }
     }
     
-    override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
         animator.removeAllBehaviors()
     }
     
@@ -110,7 +110,7 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         }
         
         let hasScores = !scores.isEmpty
-        tableView.backgroundColor = hasScores ? UIColor.whiteColor() : UIColor.groupTableViewBackgroundColor()
+        tableView.backgroundColor = hasScores ? UIColor.white : UIColor.groupTableViewBackground
         tableView.tableFooterView = hasScores ? nil : UIView()
         
         tableView.reloadData()
@@ -126,7 +126,7 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         let gameView = SKView()
         gameView.ignoresSiblingOrder = true
         vc.view = gameView
-        presentViewController(vc, animated: true, completion: nil)
+        present(vc, animated: true, completion: nil)
     }
     
     func bounce() {
@@ -147,8 +147,8 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
             elasticityBehavior.elasticity = 0.8;
             animator.addBehavior(elasticityBehavior)
         } else {
-            let pusher = UIPushBehavior(items: [logo], mode: .Instantaneous)
-            pusher.pushDirection = CGVectorMake(50, 40)
+            let pusher = UIPushBehavior(items: [logo], mode: .instantaneous)
+            pusher.pushDirection = CGVector(dx: 50, dy: 40)
             pusher.active = true
             animator.addBehavior(pusher)
             
@@ -161,14 +161,14 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
     
     // MARK: - Table view data source
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         if scores.isEmpty {
             return 0
         }
         return scores.count + 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return decalageBest
         } else if section == 1 {
@@ -177,7 +177,7 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         return scores[section - 1].count
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
             return "Podium"
         } else if section == 1 {
@@ -187,14 +187,14 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         return "\(index + 1)-\(index + sectionSize)"
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
             return 100
         }
         return 44
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var index = indexPath.row
         var data: (String, Int, String, Int)
@@ -214,26 +214,26 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
         
         var cell: UITableViewCell
         if indexPath.section == 0 {
-            cell = tableView.dequeueReusableCellWithIdentifier("scoreBestCell", forIndexPath: indexPath)
+            cell = tableView.dequeueReusableCell(withIdentifier: "scoreBestCell", for: indexPath)
             
             cell.textLabel!.text = data.0
-            cell.textLabel!.font = currentUser ? UIFont.boldSystemFontOfSize(cell.textLabel!.font.pointSize) : UIFont.systemFontOfSize(cell.textLabel!.font.pointSize)
-            cell.detailTextLabel!.font = currentUser ? UIFont.boldSystemFontOfSize(cell.detailTextLabel!.font.pointSize) : UIFont.systemFontOfSize(cell.detailTextLabel!.font.pointSize)
+            cell.textLabel!.font = currentUser ? UIFont.boldSystemFont(ofSize: cell.textLabel!.font.pointSize) : UIFont.systemFont(ofSize: cell.textLabel!.font.pointSize)
+            cell.detailTextLabel!.font = currentUser ? UIFont.boldSystemFont(ofSize: cell.detailTextLabel!.font.pointSize) : UIFont.systemFont(ofSize: cell.detailTextLabel!.font.pointSize)
             cell.imageView?.image = UIImage(named: ("medal" + String(index + 1)))
             
             let st = rang + " " + data.2
             let at = NSMutableAttributedString(string: st)
-            at.setAttributes([NSFontAttributeName: UIFont.systemFontOfSize(13), NSForegroundColorAttributeName: UIColor(white: 0.85, alpha: 1)],
+            at.setAttributes([NSFontAttributeName: UIFont.systemFont(ofSize: 13), NSForegroundColorAttributeName: UIColor(white: 0.85, alpha: 1)],
                              range: NSMakeRange(st.characters.count - data.2.characters.count, data.2.characters.count))
             cell.detailTextLabel!.attributedText = at
             
         } else {
-            let scoreCell = tableView.dequeueReusableCellWithIdentifier("scoreCell", forIndexPath: indexPath) as! ScoreCell
+            let scoreCell = tableView.dequeueReusableCell(withIdentifier: "scoreCell", for: indexPath) as! ScoreCell
             
             scoreCell.nameLabel.text = data.0
-            scoreCell.nameLabel.font = currentUser ? UIFont.boldSystemFontOfSize(scoreCell.nameLabel.font.pointSize) : UIFont.systemFontOfSize(scoreCell.nameLabel.font.pointSize)
+            scoreCell.nameLabel.font = currentUser ? UIFont.boldSystemFont(ofSize: scoreCell.nameLabel.font.pointSize) : UIFont.systemFont(ofSize: scoreCell.nameLabel.font.pointSize)
             scoreCell.scoreLabel.text = rang
-            scoreCell.scoreLabel.font = currentUser ? UIFont.boldSystemFontOfSize(scoreCell.scoreLabel.font.pointSize) : UIFont.systemFontOfSize(scoreCell.scoreLabel.font.pointSize)
+            scoreCell.scoreLabel.font = currentUser ? UIFont.boldSystemFont(ofSize: scoreCell.scoreLabel.font.pointSize) : UIFont.systemFont(ofSize: scoreCell.scoreLabel.font.pointSize)
             scoreCell.descLabel.text = String(data.3)
             scoreCell.osLabel.text = data.2
             
@@ -256,36 +256,36 @@ class Welcome: UIViewController, UITableViewDelegate, UITableViewDataSource, DZN
     
     // MARK: - DZNEmptyDataSet
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        let height = UIScreen.mainScreen().bounds.size.height
-        if UI_USER_INTERFACE_IDIOM() != .Pad && (UIDeviceOrientationIsLandscape(UIDevice.currentDevice().orientation) || UIScreen.mainScreen().bounds.size.width > height) {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        let height = UIScreen.main.bounds.size.height
+        if UI_USER_INTERFACE_IDIOM() != .pad && (UIDeviceOrientationIsLandscape(UIDevice.current.orientation) || UIScreen.main.bounds.size.width > height) {
             return nil
         }
         return Data.sharedData.logo2.scaleAndCrop(CGSize(width: 127 * pow(height / 480, 2), height: 127 * pow(height / 480, 2)))
     }
     
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(18),
-                     NSForegroundColorAttributeName: UIColor.darkGrayColor()]
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 18),
+                     NSForegroundColorAttributeName: UIColor.darkGray]
         return NSAttributedString(string: "On botte en touche pour trouver ton pseudo, joue grâce à ton login ESEO !", attributes: attrs)
     }
     
-    func buttonTitleForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> NSAttributedString! {
-        let attrs = [NSFontAttributeName: UIFont.boldSystemFontOfSize(17),
-                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!]
+    func buttonTitle(forEmptyDataSet scrollView: UIScrollView!, for state: UIControlState) -> NSAttributedString! {
+        let attrs = [NSFontAttributeName: UIFont.boldSystemFont(ofSize: 17),
+                     NSForegroundColorAttributeName: UINavigationBar.appearance().barTintColor!] as [String : Any]
         return NSAttributedString(string: "Me connecter", attributes: attrs)
     }
     
-    func emptyDataSet(scrollView: UIScrollView!, didTapButton: UIButton!) {
-        UIApplication.sharedApplication().sendAction(navigationItem.leftBarButtonItem!.action, to: navigationItem.leftBarButtonItem!.target, from: nil, forEvent: nil)
+    func emptyDataSet(_ scrollView: UIScrollView!, didTap didTapButton: UIButton!) {
+        UIApplication.shared.sendAction(navigationItem.leftBarButtonItem!.action!, to: navigationItem.leftBarButtonItem!.target, from: nil, for: nil)
     }
 }
 
 class Logo: UIImageView {
-    private var hasFallen = false
+    fileprivate var hasFallen = false
     
     @available(iOS 9.0, *)
     override var collisionBoundsType: UIDynamicItemCollisionBoundsType {
-        return (hasFallen) ? .Ellipse : .Rectangle
+        return (hasFallen) ? .ellipse : .rectangle
     }
 }

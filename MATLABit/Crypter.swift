@@ -29,11 +29,11 @@ class Crypter: UITableViewController, UITextFieldDelegate {
     @IBOutlet var btnChiffrer: UIButton!
     @IBOutlet var btnDechiffrer: UIButton!
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard #available(iOS 9.1, *) else {
-            btnChiffrer.setTitle("Chiffrer", forState: .Normal)
-            btnDechiffrer.setTitle("Déchiffrer", forState: .Normal)
+            btnChiffrer.setTitle("Chiffrer", for: UIControlState())
+            btnDechiffrer.setTitle("Déchiffrer", for: UIControlState())
             return
         }
     }
@@ -41,47 +41,47 @@ class Crypter: UITableViewController, UITextFieldDelegate {
     
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return 2
         }
         return 1
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if outField.text == "" {
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
             return
         }
         
         let menuPartage = UIActivityViewController(activityItems: [outField.text!], applicationActivities: nil)
         menuPartage.title = "Partager le message chiffré"
-        menuPartage.excludedActivityTypes = [UIActivityTypeAddToReadingList]
+        menuPartage.excludedActivityTypes = [UIActivityType.addToReadingList]
         
         if let pop = menuPartage.popoverPresentationController {
             pop.sourceView = tableView
-            pop.sourceRect = tableView.cellForRowAtIndexPath(indexPath)!.frame
-            pop.permittedArrowDirections = .Up
+            pop.sourceRect = tableView.cellForRow(at: indexPath)!.frame
+            pop.permittedArrowDirections = .up
         }
         
-        presentViewController(menuPartage, animated: true) {
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        present(menuPartage, animated: true) {
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
     
     
     // MARK: - Text Field delegate
     
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         var text1 = inField.text
         var text2 = keyField.text
         let text = textField.text
-        let newText = (text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
+        let newText = (text! as NSString).replacingCharacters(in: range, with: string)
         
         if textField == inField {
             text1 = newText
@@ -93,14 +93,14 @@ class Crypter: UITableViewController, UITextFieldDelegate {
         let hex = "[0-9a-fA-F]+"
         let isHex = NSPredicate(format: "SELF MATCHES %@", hex)
         
-        btnChiffrer.enabled   = text1 != "" && text2 != ""
-        btnDechiffrer.enabled = isHex.evaluateWithObject(text1) && text2 != ""
+        btnChiffrer.isEnabled   = text1 != "" && text2 != ""
+        btnDechiffrer.isEnabled = isHex.evaluate(with: text1) && text2 != ""
         
         return true
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        if inField.isFirstResponder() {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if inField.isFirstResponder {
             keyField.becomeFirstResponder()
         }
         else {
@@ -132,7 +132,7 @@ class Crypter: UITableViewController, UITextFieldDelegate {
             }
         }
         
-        outField.text = result.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        outField.text = result.trimmingCharacters(in: .whitespaces)
     }
     
     @IBAction func dechiffrer() {
@@ -147,12 +147,12 @@ class Crypter: UITableViewController, UITextFieldDelegate {
         var result = Array<UInt16>()
         
         for i in 0 ..< nbrChar {
-            let range = original.startIndex.advancedBy(i * 4) ..< original.startIndex.advancedBy((i * 4) + 4)
-            let hexPart = original.substringWithRange(range)
+            let range = original.characters.index(original.startIndex, offsetBy: i * 4) ..< original.characters.index(original.startIndex, offsetBy: (i * 4) + 4)
+            let hexPart = original.substring(with: range)
             
             var originalChar: UInt32 = 0
-            let scanner = NSScanner(string: hexPart)
-            scanner.scanHexInt(&originalChar)
+            let scanner = Scanner(string: hexPart)
+            scanner.scanHexInt32(&originalChar)
             
             let res = UInt16(originalChar) ^ ke16[j]
             result.append(res)
@@ -164,6 +164,6 @@ class Crypter: UITableViewController, UITextFieldDelegate {
         }
         
         let final = String(utf16CodeUnits: result, count: result.count)
-        outField.text = final.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        outField.text = final.trimmingCharacters(in: .whitespaces)
     }
 }
